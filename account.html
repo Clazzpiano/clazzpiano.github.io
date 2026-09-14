@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>마이페이지 · 클래쯔피아노</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <div class="header-row">
+    <a href="index.html" class="brand">
+      <img class="brand-logo" src="logo.png" alt="클래쯔피아노 Clazz Piano">
+      <span class="brand-kr" data-i18n="brandKr">클래쯔피아노</span>
+    </a>
+    <div class="header-right">
+      <button class="menu-toggle" id="menuToggle" aria-label="메뉴 열기" aria-expanded="false"><span></span><span></span><span></span></button>
+      <nav class="main-nav" id="mainNav">
+        <a class="nav-link" href="worksheets.html" data-i18n="navWorksheets">무료 워크지</a>
+        <a class="nav-link" href="sheetmusic.html" data-i18n="navSheetMusic">악보+MR</a>
+        <a class="nav-link" href="games.html" data-i18n="navGames">유료 게임</a>
+        <a class="nav-link" href="account.html" id="myPageLink">마이페이지</a>
+      </nav>
+      <div class="lang-toggle" role="group" aria-label="language toggle">
+        <button type="button" class="active" data-lang="kr" id="langKr">KR</button>
+        <button type="button" data-lang="en" id="langEn">EN</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- 로그인 전: 로그인/회원가입 -->
+  <div class="auth-shell" id="authShell">
+    <a class="back-link" href="index.html" data-i18n="backHome">← 홈으로</a>
+    <div class="auth-tabs">
+      <button type="button" class="auth-tab active" data-target="loginForm" data-i18n="tabLogin">로그인</button>
+      <button type="button" class="auth-tab" data-target="signupForm" data-i18n="tabSignup">회원가입</button>
+    </div>
+
+    <form class="auth-form active" id="loginForm">
+      <div class="form-field">
+        <label for="loginUsername" data-i18n="fieldUsername">아이디</label>
+        <input type="text" id="loginUsername" required>
+      </div>
+      <div class="form-field">
+        <label for="loginPassword" data-i18n="fieldPassword">비밀번호</label>
+        <input type="password" id="loginPassword" required>
+      </div>
+      <p class="auth-error" id="loginError" data-i18n="loginErrorMsg">아이디 또는 비밀번호가 올바르지 않아요.</p>
+      <button type="submit" class="btn btn-solid" style="width:100%" data-i18n="tabLogin">로그인</button>
+      <p class="auth-note" data-i18n="authNote">데모용 계정 시스템이에요. 비밀번호는 암호화 없이 이 브라우저에만 저장돼요.</p>
+    </form>
+
+    <form class="auth-form" id="signupForm">
+      <div class="auth-tabs" style="margin-bottom:20px;">
+        <button type="button" class="auth-tab active" data-member-type="individual" data-i18n="memberIndividual">개인회원</button>
+        <button type="button" class="auth-tab" data-member-type="director" data-i18n="memberDirector">원장님회원</button>
+      </div>
+
+      <div class="form-field">
+        <label for="signupUsername" data-i18n="fieldUsername">아이디</label>
+        <input type="text" id="signupUsername" required>
+      </div>
+      <div class="form-field">
+        <label for="signupName" data-i18n="fieldName">이름</label>
+        <input type="text" id="signupName" required>
+      </div>
+
+      <div id="directorFields" style="display:none;">
+        <div class="form-field">
+          <label for="signupBusinessName" data-i18n="fieldBusinessName">상호명</label>
+          <input type="text" id="signupBusinessName">
+        </div>
+        <div class="form-field">
+          <label for="signupBusinessAddress" data-i18n="fieldBusinessAddress">사업자주소</label>
+          <input type="text" id="signupBusinessAddress">
+        </div>
+        <div class="form-field">
+          <label for="signupBusinessNumber" data-i18n="fieldBusinessNumber">사업자번호</label>
+          <input type="text" id="signupBusinessNumber">
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="signupPhone" data-i18n="fieldPhone">연락처</label>
+        <input type="tel" id="signupPhone" required>
+      </div>
+      <div class="form-field">
+        <label for="signupEmail" data-i18n="fieldEmail">이메일</label>
+        <input type="email" id="signupEmail" required>
+      </div>
+      <div class="form-field">
+        <label for="signupPassword" data-i18n="fieldPassword">비밀번호</label>
+        <input type="password" id="signupPassword" required>
+      </div>
+      <p class="auth-error" id="signupError" data-i18n="signupErrorExists">이미 사용 중인 아이디예요.</p>
+      <button type="submit" class="btn btn-solid" style="width:100%" data-i18n="tabSignup">회원가입</button>
+      <p class="auth-note" data-i18n="authNote">데모용 계정 시스템이에요. 비밀번호는 암호화 없이 이 브라우저에만 저장돼요.</p>
+    </form>
+  </div>
+
+  <!-- 로그인 후: 대시보드 -->
+  <div class="account-shell" id="dashboardShell" style="display:none;">
+    <a class="back-link" href="index.html" data-i18n="backHome">← 홈으로</a>
+
+    <div class="account-card">
+      <div class="account-user-row">
+        <div>
+          <div class="name" id="dashName">이름</div>
+          <div class="email" id="dashUsername">아이디</div>
+          <div class="email" id="dashEmail">email@example.com</div>
+        </div>
+        <button class="btn btn-outline" id="logoutBtn" data-i18n="logoutBtn">로그아웃</button>
+      </div>
+    </div>
+
+    <div class="account-card">
+      <h3 data-i18n="subStatusTitle">구독 현황</h3>
+      <div id="subStatusArea"></div>
+    </div>
+
+    <div class="account-card">
+      <h3 data-i18n="ownedGamesTitle">보유 게임</h3>
+      <ul class="owned-list" id="ownedGamesList"></ul>
+    </div>
+
+    <div class="account-card">
+      <h3 data-i18n="ownedSheetMusicTitle">보유 악보+MR</h3>
+      <ul class="owned-list" id="ownedSheetMusicList"></ul>
+    </div>
+
+    <div class="account-card">
+      <h3 data-i18n="historyTitle">구매 · 다운로드 내역</h3>
+      <ul class="history-list" id="historyList"></ul>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h4 data-i18n="brandKr">클래쯔피아노</h4>
+        <p data-i18n="footerDesc" data-i18n-html>음악학원을 위한 수업자료를 만듭니다.<br><br>배움안에 즐거움과 행복이 함께하는 그 지점을 만들어가고 있어요.</p>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footerInfoTitle">사업자 정보</h4>
+        <ul class="footer-links">
+          <li data-i18n="footerInfoName">상호 : 클래쯔피아노</li>
+          <li data-i18n="footerInfoContact">문의 : hello@clazzpiano.kr</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footerMoreTitle">더보기</h4>
+        <ul class="footer-links">
+          <li><a href="pricing.html" data-i18n="footerPricing">구독 플랜</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Clazz Piano. All rights reserved.</span>
+      <span data-i18n="footerNote">본 사이트는 데모 버전이며 일부 기능은 준비 중입니다.</span>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
+<script src="app.js"></script>
+<script>
+(function(){
+  var $ = ClazzApp.$;
+
+  var menuToggle = $('#menuToggle');
+  var mainNav = $('#mainNav');
+  menuToggle.addEventListener('click', function(){
+    var isOpen = mainNav.classList.toggle('open');
+    menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+
+  function getRedirectTarget(){
+    var params = new URLSearchParams(window.location.search);
+    return params.get('redirect') || 'account.html';
+  }
+
+  /* ---------- Auth tab switching (로그인/회원가입) ---------- */
+  document.querySelectorAll('.auth-tab[data-target]').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      document.querySelectorAll('.auth-tab[data-target]').forEach(function(t){ t.classList.remove('active'); });
+      tab.classList.add('active');
+      document.querySelectorAll('.auth-form').forEach(function(f){
+        f.classList.toggle('active', f.id === tab.getAttribute('data-target'));
+      });
+    });
+  });
+
+  /* ---------- Member type switching (개인회원/원장님회원) ---------- */
+  var directorFields = document.getElementById('directorFields');
+  var directorInputs = directorFields.querySelectorAll('input');
+  var currentMemberType = 'individual';
+  document.querySelectorAll('.auth-tab[data-member-type]').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      document.querySelectorAll('.auth-tab[data-member-type]').forEach(function(t){ t.classList.remove('active'); });
+      tab.classList.add('active');
+      currentMemberType = tab.getAttribute('data-member-type');
+      var isDirector = currentMemberType === 'director';
+      directorFields.style.display = isDirector ? 'block' : 'none';
+      directorInputs.forEach(function(input){ input.required = isDirector; });
+    });
+  });
+
+  /* ---------- Login ---------- */
+  $('#loginForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    $('#loginError').classList.remove('show');
+    var username = $('#loginUsername').value;
+    var pw = $('#loginPassword').value;
+    var submitBtn = e.target.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    ClazzApp.logIn(username, pw).then(function(res){
+      submitBtn.disabled = false;
+      if(res.ok){
+        window.location.href = getRedirectTarget();
+      }else{
+        $('#loginError').classList.add('show');
+      }
+    });
+  });
+
+  /* ---------- Signup ---------- */
+  var MSG = {
+    usernameTaken: {kr:'이미 사용 중인 아이디예요.', en:'That username is already taken.'},
+    emailTaken: {kr:'이미 사용 중인 이메일이에요.', en:'That email is already registered.'},
+    weakPassword: {kr:'비밀번호는 6자 이상으로 입력해주세요.', en:'Password must be at least 6 characters.'},
+    fillRequired: {kr:'필수 항목을 모두 입력해주세요.', en:'Please fill in all required fields.'},
+    unknown: {kr:'가입 중 문제가 발생했어요. 다시 시도해주세요.', en:'Something went wrong. Please try again.'}
+  };
+
+  $('#signupForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    $('#signupError').classList.remove('show');
+
+    var payload = {
+      memberType: currentMemberType,
+      username: $('#signupUsername').value.trim(),
+      name: $('#signupName').value.trim(),
+      phone: $('#signupPhone').value.trim(),
+      email: $('#signupEmail').value.trim(),
+      password: $('#signupPassword').value,
+      businessName: $('#signupBusinessName').value.trim(),
+      businessAddress: $('#signupBusinessAddress').value.trim(),
+      businessNumber: $('#signupBusinessNumber').value.trim()
+    };
+
+    var submitBtn = e.target.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+
+    ClazzApp.signUp(payload).then(function(res){
+      submitBtn.disabled = false;
+      if(res.ok){
+        window.location.href = getRedirectTarget();
+        return;
+      }
+      var msgKey = res.error === 'exists' ? MSG.usernameTaken
+        : res.error === 'email-taken' ? MSG.emailTaken
+        : res.error === 'weak-password' ? MSG.weakPassword
+        : res.error === 'missing' ? MSG.fillRequired
+        : MSG.unknown;
+      $('#signupError').textContent = ClazzApp.t(msgKey);
+      $('#signupError').classList.add('show');
+    });
+  });
+
+  /* ---------- Logout ---------- */
+  $('#logoutBtn').addEventListener('click', function(){
+    ClazzApp.logOut();
+    ClazzApp.showToast(ClazzApp.getLang() === 'en' ? 'Logged out.' : '로그아웃 되었어요.');
+    setTimeout(function(){ window.location.href = 'index.html'; }, 600);
+  });
+
+  /* ---------- Render dashboard ---------- */
+  function renderDashboard(){
+    var lang = ClazzApp.getLang();
+    var user = ClazzApp.currentUser();
+    if(!user){
+      $('#authShell').style.display = 'block';
+      $('#dashboardShell').style.display = 'none';
+      return;
+    }
+    $('#authShell').style.display = 'none';
+    $('#dashboardShell').style.display = 'flex';
+
+    var honorific = lang === 'en' ? '' : (user.memberType === 'director' ? ' 원장님' : '님');
+    var directorTag = lang === 'en' && user.memberType === 'director' ? ' (Director)' : '';
+    $('#dashName').textContent = user.name + honorific + directorTag;
+    $('#dashUsername').textContent = (lang === 'en' ? 'Username: ' : '아이디 ') + user.username;
+    $('#dashEmail').textContent = user.email;
+
+    var ent = ClazzApp.getEnt(user.username);
+
+    // 구독 현황
+    var subArea = $('#subStatusArea');
+    if(ent.subscription){
+      var pct = ent.gameSlotsTotal > 0 ? Math.round((ent.gameSlotsUsed / ent.gameSlotsTotal) * 100) : 0;
+      var tierName = ClazzApp.tierDisplayName(ent.subscription.tierId);
+      var subbedLabel = lang === 'en' ? (tierName + ' — active') : (tierName + ' 구독 중');
+      var renewLabel = lang === 'en' ? 'Next billing date ' : '다음 결제일 ';
+      var perMonth = lang === 'en' ? '/mo' : '/월';
+      var slotsLabel = lang === 'en' ? 'Game slots used' : '게임 슬롯';
+      var slotsUsedWord = lang === 'en' ? '' : ' 사용';
+      var creditsLabel = lang === 'en' ? 'Worksheet download credits left' : '남은 워크지 다운로드 크레딧';
+      var creditsUnit = lang === 'en' ? '' : '개';
+      var changeBtn = lang === 'en' ? 'Change plan' : '구독 플랜 변경';
+
+      subArea.innerHTML =
+        '<div class="sub-status">' +
+          '<div>' +
+            '<div class="tier-name">' + subbedLabel + '</div>' +
+            '<div class="meta">' + renewLabel + ClazzApp.formatDate(ent.subscription.renewsOn) + ' · ' + ClazzApp.money(ent.subscription.price) + perMonth + '</div>' +
+            '<div class="meta">' + slotsLabel + ' ' + ent.gameSlotsUsed + ' / ' + ent.gameSlotsTotal + slotsUsedWord + '</div>' +
+            '<div class="slot-bar"><div class="slot-bar-fill" style="width:' + pct + '%"></div></div>' +
+          '</div>' +
+          '<div>' +
+            '<div class="meta">' + creditsLabel + '</div>' +
+            '<div class="tier-name">' + ent.worksheetCredits + creditsUnit + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<a class="btn btn-outline" href="pricing.html">' + changeBtn + '</a>';
+    }else{
+      var noSubLabel = lang === 'en' ? "You don't have an active subscription yet." : '아직 구독 중인 플랜이 없어요.';
+      var seeBtn = lang === 'en' ? 'See subscription plans' : '구독 플랜 보러가기';
+      subArea.innerHTML =
+        '<p class="empty-line" style="margin-bottom:14px;">' + noSubLabel + '</p>' +
+        '<a class="btn btn-gold" href="pricing.html">' + seeBtn + '</a>';
+    }
+
+    // 보유 게임
+    var gamesList = $('#ownedGamesList');
+    gamesList.innerHTML = '';
+    if(ent.ownedGameIds.length === 0){
+      gamesList.innerHTML = '<li class="empty-line">' + (lang === 'en' ? "You don't own any games yet." : '아직 보유한 게임이 없어요.') + '</li>';
+    }else{
+      ent.ownedGameIds.forEach(function(gameId){
+        var game = ClazzApp.findGame(gameId);
+        if(!game) return;
+        var li = document.createElement('li');
+        li.innerHTML = '<span>' + ClazzApp.t(game.name) + '</span>';
+        var btn = document.createElement('button');
+        btn.className = 'btn btn-outline';
+        btn.textContent = lang === 'en' ? 'Play' : '게임 이용하기';
+        btn.addEventListener('click', function(){ ClazzApp.launchGame(game); });
+        li.appendChild(btn);
+        gamesList.appendChild(li);
+      });
+    }
+
+    // 보유 악보+MR
+    var sheetMusicList = $('#ownedSheetMusicList');
+    sheetMusicList.innerHTML = '';
+    var ownedSheetMusicIds = ent.ownedSheetMusicIds || [];
+    if(ownedSheetMusicIds.length === 0){
+      sheetMusicList.innerHTML = '<li class="empty-line">' + (lang === 'en' ? "You don't own any sheet music yet." : '아직 보유한 악보+MR이 없어요.') + '</li>';
+    }else{
+      ownedSheetMusicIds.forEach(function(smId){
+        var item = ClazzApp.findSheetMusic(smId);
+        if(!item) return;
+        var li = document.createElement('li');
+        li.innerHTML = '<span>' + ClazzApp.t(item.name) + '</span>';
+        var pdfBtn = document.createElement('button');
+        pdfBtn.className = 'btn btn-outline';
+        pdfBtn.textContent = lang === 'en' ? 'Sheet PDF' : '악보 PDF';
+        pdfBtn.style.marginRight = '8px';
+        pdfBtn.addEventListener('click', function(){
+          ClazzApp.downloadStorageFile(ClazzApp.sheetMusicPdfPath(item), ClazzApp.t(item.name) + ' PDF');
+        });
+        li.appendChild(pdfBtn);
+        if(item.hasMr !== false){
+          var mrBtn = document.createElement('button');
+          mrBtn.className = 'btn btn-outline';
+          mrBtn.textContent = lang === 'en' ? 'MR audio' : 'MR 음원';
+          mrBtn.addEventListener('click', function(){
+            ClazzApp.downloadStorageFile(ClazzApp.sheetMusicMrPath(item), ClazzApp.t(item.name) + ' MR');
+          });
+          li.appendChild(mrBtn);
+        }
+        sheetMusicList.appendChild(li);
+      });
+    }
+
+    // 구매/다운로드 내역
+    var historyList = $('#historyList');
+    historyList.innerHTML = '';
+    var combined = ent.purchaseHistory.map(function(h){
+      return {label: ClazzApp.historyItemLabel(h), price: h.price, date: h.date};
+    }).concat(ent.freeDownloads.map(function(d){
+      return {label: ClazzApp.freeDownloadLabel(d), price: 0, date: d.date};
+    }));
+    combined.sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
+
+    if(combined.length === 0){
+      historyList.innerHTML = '<li class="empty-line">' + (lang === 'en' ? 'No activity yet.' : '아직 내역이 없어요.') + '</li>';
+    }else{
+      combined.forEach(function(item){
+        var li = document.createElement('li');
+        li.innerHTML =
+          '<span>' + item.label + '</span>' +
+          '<span class="h-price">' + (item.price > 0 ? ClazzApp.money(item.price) : (lang === 'en' ? 'Free' : '무료')) + '</span>' +
+          '<span class="h-date">' + ClazzApp.formatDate(item.date) + '</span>';
+        historyList.appendChild(li);
+      });
+    }
+  }
+
+  // 게임 플레이어 모달이 필요하므로 최소 마크업 삽입 (보유 게임 이용하기용)
+  var playerModal = document.createElement('div');
+  playerModal.className = 'modal-overlay';
+  playerModal.id = 'gamePlayerModal';
+  playerModal.setAttribute('role','dialog');
+  playerModal.innerHTML =
+    '<div class="modal-box">' +
+      '<div class="player-topbar"><span class="serif" id="playerTitle">게임</span><button class="modal-close" data-close="gamePlayerModal">&times;</button></div>' +
+      '<div class="player-stage" id="playerStage"><div class="spinner"></div><p>게임을 불러오는 중입니다.</p></div>' +
+    '</div>';
+  document.body.appendChild(playerModal);
+  ClazzApp.initModalDismiss();
+
+  var PAGE_I18N = Object.assign({}, ClazzApp.COMMON_I18N, {
+    tabLogin:{kr:'로그인', en:'Log in'},
+    tabSignup:{kr:'회원가입', en:'Sign up'},
+    fieldUsername:{kr:'아이디', en:'Username'},
+    fieldPassword:{kr:'비밀번호', en:'Password'},
+    fieldName:{kr:'이름', en:'Name'},
+    fieldPhone:{kr:'연락처', en:'Phone'},
+    fieldEmail:{kr:'이메일', en:'Email'},
+    fieldBusinessName:{kr:'상호명', en:'Business name'},
+    fieldBusinessAddress:{kr:'사업자주소', en:'Business address'},
+    fieldBusinessNumber:{kr:'사업자번호', en:'Business number'},
+    memberIndividual:{kr:'개인회원', en:'Individual'},
+    memberDirector:{kr:'원장님회원', en:'Studio Director'},
+    loginErrorMsg:{kr:'아이디 또는 비밀번호가 올바르지 않아요.', en:'Incorrect username or password.'},
+    signupErrorExists:{kr:'이미 사용 중인 아이디예요.', en:'That username is already taken.'},
+    authNote:{kr:'데모용 계정 시스템이에요. 비밀번호는 암호화 없이 이 브라우저에만 저장돼요.', en:'This is a demo account system. Passwords are stored unencrypted in this browser only.'},
+    logoutBtn:{kr:'로그아웃', en:'Log out'},
+    subStatusTitle:{kr:'구독 현황', en:'Subscription'},
+    ownedGamesTitle:{kr:'보유 게임', en:'My Games'},
+    ownedSheetMusicTitle:{kr:'보유 악보+MR', en:'My Sheet Music'},
+    historyTitle:{kr:'구매 · 다운로드 내역', en:'Purchase & Download History'}
+  });
+
+  ClazzApp.onReady(function(){
+  ClazzApp.initLangToggle(PAGE_I18N, function(){
+    ClazzApp.paintAuthNav();
+    renderDashboard();
+  });
+  });
+})();
+</script>
+
+</body>
+</html>

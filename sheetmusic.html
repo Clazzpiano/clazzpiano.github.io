@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>악보+MR 전체보기 · 클래쯔피아노</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <div class="header-row">
+    <a href="index.html" class="brand">
+      <img class="brand-logo" src="logo.png" alt="클래쯔피아노 Clazz Piano">
+      <span class="brand-kr" data-i18n="brandKr">클래쯔피아노</span>
+    </a>
+    <div class="header-right">
+      <button class="menu-toggle" id="menuToggle" aria-label="메뉴 열기" aria-expanded="false"><span></span><span></span><span></span></button>
+      <nav class="main-nav" id="mainNav">
+        <a class="nav-link" href="worksheets.html" data-i18n="navWorksheets">무료 워크지</a>
+        <a class="nav-link" href="sheetmusic.html" data-i18n="navSheetMusic">악보+MR</a>
+        <a class="nav-link" href="games.html" data-i18n="navGames">유료 게임</a>
+        <a class="nav-link" href="account.html" id="myPageLink">마이페이지</a>
+      </nav>
+      <div class="lang-toggle" role="group" aria-label="language toggle">
+        <button type="button" class="active" data-lang="kr" id="langKr">KR</button>
+        <button type="button" data-lang="en" id="langEn">EN</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap page-head">
+    <a class="back-link" href="index.html" data-i18n="backHome">← 홈으로</a>
+    <h1 data-i18n="pageTitle">악보+MR 전체보기</h1>
+    <p data-i18n="pageSub">클래쯔피아노 소곡의 악보 PDF와 반주 MR 음원을 한 번에 다운로드할 수 있어요.</p>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <div class="category-tabs" role="tablist" id="categoryTabs"></div>
+      <div id="panelsWrap"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand"><h4 data-i18n="brandKr">클래쯔피아노</h4><p data-i18n="footerDesc" data-i18n-html>음악학원을 위한 수업자료를 만듭니다.<br><br>배움안에 즐거움과 행복이 함께하는 그 지점을 만들어가고 있어요.</p></div>
+      <div class="footer-col"><h4 data-i18n="footerInfoTitle">사업자 정보</h4><ul class="footer-links"><li data-i18n="footerInfoName">상호 : 클래쯔피아노</li><li data-i18n="footerInfoContact">문의 : hello@clazzpiano.kr</li></ul></div>
+      <div class="footer-col"><h4 data-i18n="footerMoreTitle">더보기</h4><ul class="footer-links"><li><a href="pricing.html" data-i18n="footerPricing">구독 플랜</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Clazz Piano. All rights reserved.</span>
+      <span data-i18n="footerNote">본 사이트는 데모 버전이며 일부 기능은 준비 중입니다.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Payment modal -->
+<div class="modal-overlay" id="paymentModal" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <button class="modal-close" data-close="paymentModal">&times;</button>
+    <div class="pay-step active" id="payStepMethod">
+      <h3><span id="payTitleText">결제 수단 선택</span></h3>
+      <p class="modal-sub"><span id="paySubText"></span></p>
+      <div class="pay-methods">
+        <label class="pay-method selected"><input type="radio" name="payMethod" value="toss" checked><span data-i18n="payToss">토스페이먼츠로 결제</span></label>
+        <label class="pay-method"><input type="radio" name="payMethod" value="portone"><span data-i18n="payPortone">포트원 카드 결제</span></label>
+      </div>
+      <div class="pay-summary"><span data-i18n="paySummaryLabel">결제 금액</span><strong id="payAmountText"></strong></div>
+      <button class="btn btn-gold" style="width:100%" id="confirmPayBtn" data-i18n="payConfirm">결제 진행</button>
+    </div>
+    <div class="pay-step" id="payStepProcessing">
+      <div class="spinner"></div>
+      <p class="pay-processing-text" data-i18n="payProcessing">결제를 진행하고 있어요. 잠시만 기다려 주세요.</p>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
+<script src="app.js"></script>
+<script>
+(function(){
+  var $ = ClazzApp.$, $all = ClazzApp.$all;
+  ClazzApp.initModalDismiss();
+
+  var menuToggle = $('#menuToggle');
+  var mainNav = $('#mainNav');
+  menuToggle.addEventListener('click', function(){
+    var isOpen = mainNav.classList.toggle('open');
+    menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+
+  /* ---------- Build category tabs + panels from SHEET_MUSIC_CATEGORIES ---------- */
+  var CATS = ClazzApp.SHEET_MUSIC_CATEGORIES;
+  var tabsWrap = $('#categoryTabs');
+  var panelsWrap = $('#panelsWrap');
+
+  CATS.forEach(function(cat, i){
+    var tab = document.createElement('button');
+    tab.type = 'button';
+    tab.className = 'category-tab' + (i === 0 ? ' active' : '');
+    tab.setAttribute('role', 'tab');
+    tab.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+    tab.setAttribute('data-target', 'panel-' + cat.id);
+    tab.textContent = ClazzApp.t(cat.name);
+    tab.addEventListener('click', function(){
+      $all('.category-tab').forEach(function(t){ t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected','true');
+      $all('.worksheet-panel').forEach(function(p){ p.classList.toggle('active', p.id === 'panel-' + cat.id); });
+    });
+    tabsWrap.appendChild(tab);
+
+    var panel = document.createElement('div');
+    panel.className = 'worksheet-panel' + (i === 0 ? ' active' : '');
+    panel.id = 'panel-' + cat.id;
+    panel.setAttribute('role', 'tabpanel');
+    panel.innerHTML = '<div class="card-grid" id="grid-' + cat.id + '"></div>';
+    panelsWrap.appendChild(panel);
+  });
+
+  function refreshTabLabels(){
+    $all('.category-tab').forEach(function(tab, i){
+      tab.textContent = ClazzApp.t(CATS[i].name);
+    });
+  }
+
+  function cardForSheetMusic(item){
+    var card = document.createElement('article');
+    card.className = 'worksheet-card';
+    var lang = ClazzApp.getLang();
+    var loggedIn = ClazzApp.isLoggedIn();
+    var owned = loggedIn && ClazzApp.hasSheetMusicAccess(item);
+    var hasMr = item.hasMr !== false;
+
+    var ownedTag = lang === 'en' ? 'Purchased' : '구매 완료';
+    var loginTag = lang === 'en' ? 'Login required' : '로그인 필요';
+    var bundleTag = hasMr
+      ? (lang === 'en' ? 'Sheet PDF + MR audio' : '악보 PDF + MR 음원')
+      : (lang === 'en' ? 'Sheet PDF only' : '악보 PDF만 제공');
+
+    var priceRow = owned
+      ? '<div class="card-price-row"><span class="owned-badge">' + ownedTag + '</span></div>'
+      : '<div class="card-price-row"><span class="price-tag">' + ClazzApp.money(item.price) + '</span>' +
+        (loggedIn ? '<span class="lock-badge">' + bundleTag + '</span>' : '<span class="lock-badge">' + loginTag + '</span>') + '</div>';
+
+    var buyLabel = !loggedIn ? (lang === 'en' ? 'Log in to check' : '로그인하고 확인하기') : (lang === 'en' ? 'Buy' : '구매하기');
+    var pdfLabel = lang === 'en' ? 'Sheet PDF' : '악보 PDF';
+    var mrLabel = lang === 'en' ? 'MR audio' : 'MR 음원';
+    var previewLabel = lang === 'en' ? 'Watch preview' : '연주 영상 보기';
+
+    var actionsHtml;
+    if(owned){
+      actionsHtml = '<div style="display:flex;gap:10px;">' +
+        '<button class="btn btn-outline" data-dl="pdf" style="flex:1;">' + pdfLabel + '</button>' +
+        (hasMr ? '<button class="btn btn-outline" data-dl="mr" style="flex:1;">' + mrLabel + '</button>' : '') +
+        '</div>';
+    }else{
+      actionsHtml = '<button class="btn btn-outline" data-dl="buy">' + buyLabel + '</button>';
+    }
+
+    card.innerHTML =
+      '<h3>' + ClazzApp.t(item.name) + '</h3>' +
+      '<p>' + ClazzApp.t(item.desc) + '</p>' +
+      priceRow +
+      '<button class="btn btn-outline" data-dl="preview" style="width:100%;margin-bottom:8px;">▶ ' + previewLabel + '</button>' +
+      actionsHtml;
+
+    card.querySelector('[data-dl="preview"]').addEventListener('click', function(){
+      ClazzApp.openSheetMusicPreview(item);
+    });
+
+    if(owned){
+      card.querySelector('[data-dl="pdf"]').addEventListener('click', function(){
+        ClazzApp.downloadStorageFile(ClazzApp.sheetMusicPdfPath(item), ClazzApp.t(item.name) + ' ' + pdfLabel);
+      });
+      var mrBtn = card.querySelector('[data-dl="mr"]');
+      if(mrBtn){
+        mrBtn.addEventListener('click', function(){
+          ClazzApp.downloadStorageFile(ClazzApp.sheetMusicMrPath(item), ClazzApp.t(item.name) + ' ' + mrLabel);
+        });
+      }
+    }else{
+      card.querySelector('[data-dl="buy"]').addEventListener('click', function(){
+        if(!loggedIn){ ClazzApp.requireLogin(window.location.href); return; }
+        ClazzApp.openPaymentFlow(item, function(){
+          ClazzApp.grantSheetMusicPurchase(item.id, item.price);
+          renderAll();
+        });
+      });
+    }
+    return card;
+  }
+
+  function renderAll(){
+    var byCat = {};
+    CATS.forEach(function(c){ byCat[c.id] = []; });
+    ClazzApp.SHEET_MUSIC.forEach(function(item){
+      if(byCat[item.category]) byCat[item.category].push(item);
+    });
+    CATS.forEach(function(cat){
+      var grid = $('#grid-' + cat.id);
+      grid.innerHTML = '';
+      if(byCat[cat.id].length === 0){
+        grid.innerHTML = ClazzApp.comingSoonHTML();
+      }else{
+        byCat[cat.id].forEach(function(item){ grid.appendChild(cardForSheetMusic(item)); });
+      }
+    });
+  }
+
+  var PAGE_I18N = Object.assign({}, ClazzApp.COMMON_I18N, {
+    pageTitle:{kr:'악보+MR 전체보기', en:'All Sheet Music + MR'},
+    pageSub:{kr:'클래쯔피아노 소곡의 악보 PDF와 반주 MR 음원을 한 번에 다운로드할 수 있어요.',
+             en:'Download sheet music PDFs and MR backing tracks for Clazz Piano pieces, bundled together.'}
+  });
+
+  ClazzApp.onReady(function(){
+  ClazzApp.initLangToggle(PAGE_I18N, function(){
+    ClazzApp.paintAuthNav();
+    refreshTabLabels();
+    renderAll();
+  });
+  });
+})();
+</script>
+
+</body>
+</html>

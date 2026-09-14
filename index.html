@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>클래쯔피아노 Clazz Piano</title>
+<meta name="description" content="음악학원을 더욱 꽉 채워주는, 클래쯔피아노 — 무료 워크지와 피아노 리듬 게임">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <div class="header-row">
+    <a href="index.html#top" class="brand">
+      <img class="brand-logo" src="logo.png" alt="클래쯔피아노 Clazz Piano">
+      <span class="brand-kr" data-i18n="brandKr">클래쯔피아노</span>
+    </a>
+
+    <div class="header-right">
+      <button class="menu-toggle" id="menuToggle" aria-label="메뉴 열기" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="main-nav" id="mainNav">
+        <a class="nav-link" href="worksheets.html" data-i18n="navWorksheets">무료 워크지</a>
+        <a class="nav-link" href="sheetmusic.html" data-i18n="navSheetMusic">악보+MR</a>
+        <a class="nav-link" href="games.html" data-i18n="navGames">유료 게임</a>
+        <a class="nav-link" href="account.html" id="myPageLink" data-i18n="navMyPage">마이페이지</a>
+      </nav>
+      <div class="lang-toggle" role="group" aria-label="language toggle">
+        <button type="button" class="active" data-lang="kr" id="langKr">KR</button>
+        <button type="button" data-lang="en" id="langEn">EN</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-copy">
+        <p class="hero-eyebrow" data-i18n="heroEyebrow">for every first lesson</p>
+        <h1><span class="hero-line1" data-i18n="heroLine1">음악학원을 더욱 꽉 채워주는,</span><span class="hero-line2" data-i18n="heroLine2">클래쯔피아노</span></h1>
+        <p class="hero-sub" data-i18n="heroSub">여섯 살 아이의 첫 박자부터 초등학생의 자유로운 연주까지.<br>클래쯔피아노는 음악학원 수업이 다채롭고 즐거울 수 있도록<br>다양한 수업자료를 만듭니다.</p>
+        <div class="hero-actions">
+          <a class="btn btn-solid" href="#worksheets" data-i18n="heroBtn1">무료 워크지 받기</a>
+          <a class="btn btn-outline" href="#games" data-i18n="heroBtn2">게임 살펴보기</a>
+        </div>
+      </div>
+      <div class="hero-art">
+        <svg viewBox="0 0 480 380" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <!-- floating notes -->
+          <g class="note-float">
+            <ellipse cx="60" cy="80" rx="7" ry="5" fill="none" stroke="#0F321B" stroke-width="2"/>
+            <line x1="67" y1="80" x2="67" y2="52" stroke="#0F321B" stroke-width="2"/>
+          </g>
+          <g class="note-float" style="animation-delay:.6s">
+            <circle cx="412" cy="92" r="6" fill="#D4AF37"/>
+            <line x1="418" y1="92" x2="418" y2="68" stroke="#D4AF37" stroke-width="2"/>
+          </g>
+
+          <!-- desk -->
+          <rect x="40" y="272" width="400" height="16" rx="6" fill="#F3EEE3" stroke="#C5A059" stroke-width="1.4"/>
+          <rect x="70" y="288" width="12" height="66" fill="#0F321B" opacity="0.22"/>
+          <rect x="398" y="288" width="12" height="66" fill="#0F321B" opacity="0.22"/>
+
+          <!-- child, seated -->
+          <path d="M110 272 C110 214, 125 186, 150 186 C175 186, 190 214, 190 272 Z" fill="#0F321B"/>
+          <circle cx="150" cy="152" r="28" fill="#0F321B"/>
+          <path d="M126 144 q24 -20 48 0" stroke="#D4AF37" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <path d="M176 228 Q198 242 208 254" stroke="#0F321B" stroke-width="13" fill="none" stroke-linecap="round"/>
+
+          <!-- worksheet on desk -->
+          <g transform="rotate(-5 170 240)">
+            <rect x="115" y="205" width="112" height="74" rx="6" fill="#FDFBF7" stroke="#C5A059" stroke-width="1.3"/>
+            <path d="M130 222 q10 -8 20 0 q10 8 20 0 q10 -8 20 0 q10 8 20 0" stroke="#0F321B" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <circle cx="140" cy="252" r="6" fill="none" stroke="#D4AF37" stroke-width="2"/>
+            <line x1="146" y1="252" x2="146" y2="236" stroke="#D4AF37" stroke-width="2"/>
+            <path d="M165 248 q8 -9 16 0 t16 0" stroke="#0F321B" stroke-width="2" fill="none" stroke-linecap="round"/>
+          </g>
+          <g transform="rotate(28 216 258)">
+            <rect x="206" y="253" width="58" height="8" rx="3" fill="#D4AF37"/>
+            <path d="M264 253 l10 4 l-10 4 z" fill="#0F321B"/>
+          </g>
+
+          <!-- tablet on desk -->
+          <g transform="rotate(3 360 195)">
+            <rect x="292" y="108" width="136" height="178" rx="16" fill="#0F321B" stroke="#C5A059" stroke-width="1.4"/>
+            <rect x="304" y="124" width="112" height="136" rx="6" fill="#FDFBF7"/>
+            <circle cx="360" cy="270" r="4" fill="#C5A059"/>
+            <g transform="translate(314,176)">
+              <rect x="0" y="0" width="90" height="46" rx="4" fill="#F3EEE3" stroke="#E4DCC9" stroke-width="1"/>
+              <rect x="10" y="0" width="11" height="27" fill="#0F321B"/>
+              <rect x="28" y="0" width="11" height="27" fill="#0F321B"/>
+              <rect x="55" y="0" width="11" height="27" fill="#0F321B"/>
+              <rect x="70" y="0" width="11" height="27" fill="#0F321B"/>
+            </g>
+            <circle cx="374" cy="150" r="6" fill="#D4AF37"/>
+            <line x1="380" y1="150" x2="380" y2="132" stroke="#D4AF37" stroke-width="2"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- Free worksheets preview -->
+  <section id="worksheets" class="section-alt">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="kicker" data-i18n="wsKicker">for the classroom</p>
+        <h2 data-i18n="wsTitle">무료 워크지</h2>
+        <p data-i18n="wsSub">학원 수업에 바로 쓸 수 있도록 매달 새로 그리는 워크지예요. 종류를 골라 다운로드해서 바로 인쇄하실 수 있어요.</p>
+      </div>
+
+      <div class="category-tabs" role="tablist" aria-label="워크지 카테고리">
+        <button type="button" class="category-tab active" data-target="panel-color" role="tab" aria-selected="true" data-i18n="wsCatColor">색칠워크지</button>
+        <button type="button" class="category-tab" data-target="panel-quiz" role="tab" aria-selected="false" data-i18n="wsCatQuiz">퀴즈워크지</button>
+        <button type="button" class="category-tab" data-target="panel-madeby" role="tab" aria-selected="false" data-i18n="wsCatMadeby">made by 워크지</button>
+      </div>
+
+      <div class="worksheet-panel active" id="panel-color" role="tabpanel">
+        <div class="card-grid" id="colorCardGrid"></div>
+      </div>
+
+      <div class="worksheet-panel" id="panel-quiz" role="tabpanel">
+        <div class="empty-state">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="24" cy="24" r="18" stroke="#C5A059" stroke-width="1.6"/>
+            <path d="M19 19c0-3 2.2-5 5-5s5 2 5 4.5c0 3-3 3.5-4.3 5.3-.5.7-.7 1.5-.7 2.7" stroke="#0F321B" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="24" cy="32.5" r="1.4" fill="#0F321B"/>
+          </svg>
+          <p>퀴즈워크지는 커밍순이에요. 준비되면 이 자리에서 만나요!</p>
+          <a class="btn btn-outline" href="worksheets.html">워크지 전체보기</a>
+        </div>
+      </div>
+
+      <div class="worksheet-panel" id="panel-madeby" role="tabpanel">
+        <div class="empty-state">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="8" y="10" width="32" height="28" rx="3" stroke="#C5A059" stroke-width="1.6"/>
+            <path d="M15 30l5-9 5 6 4-5 4 8" stroke="#0F321B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="17" cy="17" r="2.2" fill="#0F321B"/>
+          </svg>
+          <p>made by 워크지는 커밍순이에요. 준비되면 이 자리에서 만나요!</p>
+          <a class="btn btn-outline" href="worksheets.html">워크지 전체보기</a>
+        </div>
+      </div>
+
+      <div class="section-more">
+        <a class="btn btn-outline" href="worksheets.html" data-i18n="wsMoreBtn">워크지 더보기</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sheet music + MR preview -->
+  <section id="sheetmusic">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="kicker" data-i18n="smKicker">sheet music &amp; MR</p>
+        <h2 data-i18n="smTitle">악보+MR</h2>
+        <p data-i18n="smSub">클래쯔피아노 오리지널 소곡의 악보 PDF와 반주 MR 음원을 함께 다운로드할 수 있어요.</p>
+      </div>
+
+      <div class="card-grid" id="sheetMusicPreviewGrid"></div>
+
+      <div class="section-more">
+        <a class="btn btn-outline" href="sheetmusic.html" data-i18n="smMoreBtn">악보+MR 더보기</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Premium games preview -->
+  <section id="games" class="section-alt">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="kicker" data-i18n="gameKicker">practice, on their own</p>
+        <h2 data-i18n="gameTitle">유료 웹 게임</h2>
+        <p data-i18n="gameSub">학원 수업 사이, 아이들이 스스로 박자를 익히는 시간을 만들어요.</p>
+      </div>
+
+      <div class="game-card">
+        <div class="game-media">
+          <svg viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="10" y="30" width="300" height="120" rx="6" fill="#081F11" stroke="#C5A059" stroke-width="1"/>
+            <line x1="10" y1="60" x2="310" y2="60" stroke="#C5A059" stroke-width="0.6"/>
+            <line x1="10" y1="80" x2="310" y2="80" stroke="#C5A059" stroke-width="0.6"/>
+            <line x1="10" y1="100" x2="310" y2="100" stroke="#C5A059" stroke-width="0.6"/>
+            <line x1="10" y1="120" x2="310" y2="120" stroke="#C5A059" stroke-width="0.6"/>
+            <circle cx="90" cy="100" r="7" fill="#D4AF37"/>
+            <circle cx="150" cy="80" r="7" fill="#F3EFE6"/>
+            <circle cx="210" cy="120" r="7" fill="#D4AF37"/>
+            <circle cx="260" cy="60" r="7" fill="#F3EFE6"/>
+            <rect x="60" y="170" width="200" height="46" rx="6" fill="#0F321B" stroke="#C5A059" stroke-width="1"/>
+            <rect x="76" y="178" width="40" height="30" rx="4" fill="#D4AF37" opacity="0.85"/>
+            <rect x="128" y="178" width="40" height="30" rx="4" fill="#F3EFE6" opacity="0.85"/>
+            <rect x="180" y="178" width="40" height="30" rx="4" fill="#D4AF37" opacity="0.85"/>
+          </svg>
+        </div>
+        <div class="game-body">
+          <p class="kicker" id="featuredGameKicker">rhythm game</p>
+          <h3 id="featuredGameTitle">두근두근 박자놀이</h3>
+          <p id="featuredGameDesc">화면 위로 흐르는 음표를 보며 손으로 직접 박자를 치는 타악기 리듬 게임. BPM과 박자표, 난이도를 골라 우리 반 아이 수준에 맞게 연습할 수 있어요.</p>
+          <div class="game-tags" id="featuredGameTags">
+            <span>6세 ~ 초등</span>
+            <span>BPM 5단계</span>
+            <span>난이도 5단계</span>
+          </div>
+          <div class="game-meta">
+            <p class="game-price" id="featuredGamePrice">5,900원<span> · 1개월 이용권</span></p>
+          </div>
+          <button class="btn btn-gold" id="startPaymentBtn">결제하고 바로 시작하기</button>
+        </div>
+      </div>
+
+      <div class="section-more">
+        <a class="btn btn-outline" href="games.html" data-i18n="gameMoreBtn">게임 더보기</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h4><span data-i18n="brandKr">클래쯔피아노</span></h4>
+        <p data-i18n="footerDesc">음악학원을 위한 수업자료를 만듭니다.<br><br>배움안에 즐거움과 행복이 함께하는 그 지점을 만들어가고 있어요.</p>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footerInfoTitle">사업자 정보</h4>
+        <ul class="footer-links">
+          <li>상호 : 클래쯔피아노</li>
+          <li>대표 : 최미현</li>
+          <li>사업자등록번호 : 000-00-00000</li>
+          <li>문의 : hello@clazzpiano.kr</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footerMoreTitle">더보기</h4>
+        <ul class="footer-links">
+          <li><a href="pricing.html" data-i18n="footerPricing">구독 플랜</a></li>
+          <li><button type="button" id="openPatchNotes" data-i18n="footerPatch">패치노트</button></li>
+          <li><button type="button" id="openBugReport" data-i18n="footerBug">버그 제보</button></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Clazz Piano. All rights reserved.</span>
+      <span data-i18n="footerNote">본 사이트는 데모 버전이며 일부 기능은 준비 중입니다.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Payment modal (shared engine via app.js) -->
+<div class="modal-overlay" id="paymentModal" role="dialog" aria-modal="true" aria-labelledby="paymentTitle">
+  <div class="modal-box">
+    <button class="modal-close" data-close="paymentModal" aria-label="닫기">&times;</button>
+    <div class="pay-step active" id="payStepMethod">
+      <h3 id="paymentTitle"><span id="payTitleText">결제 수단 선택</span></h3>
+      <p class="modal-sub"><span id="paySubText">두근두근 박자놀이 · 1개월 이용권</span></p>
+      <div class="pay-methods">
+        <label class="pay-method selected">
+          <input type="radio" name="payMethod" value="toss" checked>
+          <span data-i18n="payToss">토스페이먼츠로 결제</span>
+        </label>
+        <label class="pay-method">
+          <input type="radio" name="payMethod" value="portone">
+          <span data-i18n="payPortone">포트원 카드 결제</span>
+        </label>
+      </div>
+      <div class="pay-summary">
+        <span data-i18n="paySummaryLabel">결제 금액</span>
+        <strong id="payAmountText">5,900원</strong>
+      </div>
+      <button class="btn btn-gold" style="width:100%" id="confirmPayBtn" data-i18n="payConfirm">결제 진행</button>
+    </div>
+    <div class="pay-step" id="payStepProcessing">
+      <div class="spinner"></div>
+      <p class="pay-processing-text" data-i18n="payProcessing">결제를 진행하고 있어요. 잠시만 기다려 주세요.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Game player modal -->
+<div class="modal-overlay" id="gamePlayerModal" role="dialog" aria-modal="true" aria-labelledby="playerTitle">
+  <div class="modal-box">
+    <div class="player-topbar">
+      <span class="serif" id="playerTitle">두근두근 박자놀이</span>
+      <button class="modal-close" data-close="gamePlayerModal" aria-label="닫기">&times;</button>
+    </div>
+    <div class="player-stage" id="playerStage">
+      <div class="spinner"></div>
+      <p>게임을 불러오는 중입니다.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Patch notes modal -->
+<div class="modal-overlay" id="patchNotesModal" role="dialog" aria-modal="true" aria-labelledby="patchTitle">
+  <div class="modal-box wide">
+    <button class="modal-close" data-close="patchNotesModal" aria-label="닫기">&times;</button>
+    <h3 id="patchTitle" data-i18n="patchTitle">패치노트</h3>
+    <p class="modal-sub" data-i18n="patchSub">클래쯔피아노가 업데이트된 내역이에요.</p>
+    <div class="patch-item">
+      <span class="patch-ver">v1.3.0</span><span class="patch-date">2026.09.09</span>
+      <ul>
+        <li>회원가입/로그인 및 마이페이지 신설</li>
+        <li>구독 플랜(베이직/스탠다드/프리미엄) 신설</li>
+        <li>퀴즈워크지 · made by 워크지 유료 판매 시작</li>
+      </ul>
+    </div>
+    <div class="patch-item">
+      <span class="patch-ver">v1.2.0</span><span class="patch-date">2026.09.01</span>
+      <ul>
+        <li>두근두근 박자놀이 — 6/8박자 모드 추가</li>
+        <li>결제 후 자동 입장 흐름 개선</li>
+      </ul>
+    </div>
+    <div class="patch-item">
+      <span class="patch-ver">v1.1.0</span><span class="patch-date">2026.08.12</span>
+      <ul>
+        <li>무료 워크지 3종 신규 업로드</li>
+        <li>모바일 화면 레이아웃 개선</li>
+      </ul>
+    </div>
+    <div class="patch-item">
+      <span class="patch-ver">v1.0.0</span><span class="patch-date">2026.07.20</span>
+      <ul><li>클래쯔피아노 첫 오픈</li></ul>
+    </div>
+  </div>
+</div>
+
+<!-- Bug report modal -->
+<div class="modal-overlay" id="bugReportModal" role="dialog" aria-modal="true" aria-labelledby="bugTitle">
+  <div class="modal-box">
+    <button class="modal-close" data-close="bugReportModal" aria-label="닫기">&times;</button>
+    <h3 id="bugTitle" data-i18n="bugTitle">버그 제보</h3>
+    <p class="modal-sub" data-i18n="bugSub">발견하신 문제를 알려주시면 빠르게 확인할게요.</p>
+    <form id="bugForm">
+      <div class="form-field">
+        <label for="bugName" data-i18n="bugName">이름</label>
+        <input type="text" id="bugName" required>
+      </div>
+      <div class="form-field">
+        <label for="bugEmail" data-i18n="bugEmail">이메일</label>
+        <input type="email" id="bugEmail" required>
+      </div>
+      <div class="form-field">
+        <label for="bugContent" data-i18n="bugContent">내용</label>
+        <textarea id="bugContent" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-solid" style="width:100%" data-i18n="bugSubmit">제보 보내기</button>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
+<script src="app.js"></script>
+<script>
+(function(){
+  var $ = ClazzApp.$, $all = ClazzApp.$all;
+  ClazzApp.initModalDismiss();
+
+  /* ---------- Mobile nav ---------- */
+  var menuToggle = $('#menuToggle');
+  var mainNav = $('#mainNav');
+  menuToggle.addEventListener('click', function(){
+    var isOpen = mainNav.classList.toggle('open');
+    menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+
+  /* ---------- Footer modals ---------- */
+  $('#openPatchNotes').addEventListener('click', function(){ ClazzApp.openModal('patchNotesModal'); });
+  $('#openBugReport').addEventListener('click', function(){ ClazzApp.openModal('bugReportModal'); });
+  $('#bugForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    ClazzApp.closeModal('bugReportModal');
+    e.target.reset();
+    ClazzApp.showToast(ClazzApp.getLang() === 'en' ? 'Thanks — your report was received.' : '제보가 접수되었어요. 감사합니다.');
+  });
+
+  /* ---------- Category tabs ---------- */
+  $all('.category-tab').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      $all('.category-tab').forEach(function(t){ t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected','true');
+      var target = tab.getAttribute('data-target');
+      $all('.worksheet-panel').forEach(function(p){ p.classList.toggle('active', p.id === target); });
+    });
+  });
+
+  /* ---------- Free worksheet cards (색칠워크지) — 로그인 필요 ---------- */
+  var colorSheets = ClazzApp.WORKSHEETS.filter(function(w){ return w.category === 'color'; }).slice(0, 3);
+  var colorGrid = $('#colorCardGrid');
+
+  function downloadBtnLabel(){ return ClazzApp.getLang() === 'en' ? 'Download free PDF' : '무료 PDF 다운로드'; }
+
+  function renderColorCards(){
+    colorGrid.innerHTML = '';
+    if(colorSheets.length === 0){ colorGrid.innerHTML = ClazzApp.comingSoonHTML(); return; }
+    colorSheets.forEach(function(sheet){
+      var card = document.createElement('article');
+      card.className = 'worksheet-card';
+      card.innerHTML =
+        '<h3>' + ClazzApp.t(sheet.name) + '</h3>' +
+        '<p>' + ClazzApp.t(sheet.desc) + '</p>' +
+        '<button class="btn btn-outline" data-sheet="' + sheet.id + '">' + downloadBtnLabel() + '</button>';
+      card.querySelector('[data-sheet]').addEventListener('click', function(){
+        if(!ClazzApp.isLoggedIn()){
+          ClazzApp.showToast(ClazzApp.getLang() === 'en' ? "You'll need to log in first — heading there now." : '로그인이 필요해요. 로그인 페이지로 이동할게요.');
+          setTimeout(function(){ ClazzApp.requireLogin(window.location.href); }, 900);
+          return;
+        }
+        ClazzApp.downloadStorageFile(ClazzApp.worksheetStoragePath(sheet), ClazzApp.t(sheet.name));
+        ClazzApp.logFreeDownload(sheet.id);
+        ClazzApp.showToast(ClazzApp.getLang() === 'en' ? 'Downloading the worksheet.' : '워크지 다운로드를 시작할게요.');
+      });
+      colorGrid.appendChild(card);
+    });
+  }
+
+  /* ---------- Sheet music + MR preview (2개만 미리보기) ---------- */
+  var sheetMusicGrid = $('#sheetMusicPreviewGrid');
+  var PREVIEW_SHEET_MUSIC = ClazzApp.SHEET_MUSIC.slice(0, 2);
+
+  function renderSheetMusicPreview(){
+    sheetMusicGrid.innerHTML = '';
+    var lang = ClazzApp.getLang();
+    if(PREVIEW_SHEET_MUSIC.length === 0){ sheetMusicGrid.innerHTML = ClazzApp.comingSoonHTML(); return; }
+    PREVIEW_SHEET_MUSIC.forEach(function(item){
+      var loggedIn = ClazzApp.isLoggedIn();
+      var owned = loggedIn && ClazzApp.hasSheetMusicAccess(item);
+      var hasMr = item.hasMr !== false;
+      var ownedTag = lang === 'en' ? 'Purchased' : '구매 완료';
+      var bundleTag = hasMr
+        ? (lang === 'en' ? 'Sheet PDF + MR audio' : '악보 PDF + MR 음원')
+        : (lang === 'en' ? 'Sheet PDF only' : '악보 PDF만 제공');
+      var loginTag = lang === 'en' ? 'Login required' : '로그인 필요';
+
+      var priceRow = owned
+        ? '<div class="card-price-row"><span class="owned-badge">' + ownedTag + '</span></div>'
+        : '<div class="card-price-row"><span class="price-tag">' + ClazzApp.money(item.price) + '</span>' +
+          (loggedIn ? '<span class="lock-badge">' + bundleTag + '</span>' : '<span class="lock-badge">' + loginTag + '</span>') + '</div>';
+
+      var btnLabel;
+      if(!loggedIn) btnLabel = lang === 'en' ? 'Log in to check' : '로그인하고 확인하기';
+      else btnLabel = lang === 'en' ? 'Buy' : '구매하기';
+      var pdfLabel = lang === 'en' ? 'Sheet PDF' : '악보 PDF';
+      var mrLabel = lang === 'en' ? 'MR audio' : 'MR 음원';
+      var previewLabel = lang === 'en' ? 'Watch preview' : '연주 영상 보기';
+
+      var actionsHtml;
+      if(owned){
+        actionsHtml = '<div style="display:flex;gap:10px;">' +
+          '<button class="btn btn-outline" data-dl="pdf" style="flex:1;">' + pdfLabel + '</button>' +
+          (hasMr ? '<button class="btn btn-outline" data-dl="mr" style="flex:1;">' + mrLabel + '</button>' : '') +
+          '</div>';
+      }else{
+        actionsHtml = '<button class="btn btn-outline" data-dl="buy">' + btnLabel + '</button>';
+      }
+
+      var card = document.createElement('article');
+      card.className = 'worksheet-card';
+      card.innerHTML =
+        '<h3>' + ClazzApp.t(item.name) + '</h3>' +
+        '<p>' + ClazzApp.t(item.desc) + '</p>' +
+        priceRow +
+        '<button class="btn btn-outline" data-dl="preview" style="width:100%;margin-bottom:8px;">▶ ' + previewLabel + '</button>' +
+        actionsHtml;
+
+      card.querySelector('[data-dl="preview"]').addEventListener('click', function(){
+        ClazzApp.openSheetMusicPreview(item);
+      });
+
+      if(owned){
+        card.querySelector('[data-dl="pdf"]').addEventListener('click', function(){
+          ClazzApp.downloadStorageFile(ClazzApp.sheetMusicPdfPath(item), ClazzApp.t(item.name) + ' ' + pdfLabel);
+        });
+        var mrBtn = card.querySelector('[data-dl="mr"]');
+        if(mrBtn){
+          mrBtn.addEventListener('click', function(){
+            ClazzApp.downloadStorageFile(ClazzApp.sheetMusicMrPath(item), ClazzApp.t(item.name) + ' ' + mrLabel);
+          });
+        }
+      }else{
+        card.querySelector('[data-dl="buy"]').addEventListener('click', function(){
+          if(!loggedIn){ ClazzApp.requireLogin(window.location.href); return; }
+          ClazzApp.openPaymentFlow(item, function(){
+            ClazzApp.grantSheetMusicPurchase(item.id, item.price);
+            renderSheetMusicPreview();
+          });
+        });
+      }
+      sheetMusicGrid.appendChild(card);
+    });
+  }
+
+  /* ---------- Featured game card (로그인/구매 상태 + 언어에 따라 렌더링) ---------- */
+  var FEATURED_GAME = ClazzApp.findGame('ddgd-rhythm');
+  var payBtn = $('#startPaymentBtn');
+
+  function renderFeaturedGame(){
+    $('#featuredGameTitle').textContent = ClazzApp.t(FEATURED_GAME.name);
+    $('#featuredGameDesc').textContent = ClazzApp.t(FEATURED_GAME.desc);
+    var tagsWrap = $('#featuredGameTags');
+    tagsWrap.innerHTML = ClazzApp.t(FEATURED_GAME.tags).map(function(tag){ return '<span>' + tag + '</span>'; }).join('');
+    var unit = ClazzApp.getLang() === 'en' ? ' · 1-month pass' : ' · 1개월 이용권';
+    $('#featuredGamePrice').innerHTML = ClazzApp.money(FEATURED_GAME.price) + '<span>' + unit + '</span>';
+    refreshGameButton();
+  }
+
+  function refreshGameButton(){
+    var lang = ClazzApp.getLang();
+    if(!ClazzApp.isLoggedIn()){
+      payBtn.textContent = lang === 'en' ? 'Log in to check' : '로그인하고 확인하기';
+      payBtn.onclick = function(){ ClazzApp.requireLogin(window.location.href); };
+    }else if(ClazzApp.hasGameAccess(FEATURED_GAME.id)){
+      payBtn.textContent = lang === 'en' ? 'Start the game' : '게임 시작하기';
+      payBtn.onclick = function(){ ClazzApp.launchGame(FEATURED_GAME); };
+    }else{
+      payBtn.textContent = lang === 'en' ? 'Pay and start now' : '결제하고 바로 시작하기';
+      payBtn.onclick = function(){
+        ClazzApp.openPaymentFlow(FEATURED_GAME, function(){
+          ClazzApp.grantGamePurchase(FEATURED_GAME.id, FEATURED_GAME.price);
+          refreshGameButton();
+          ClazzApp.launchGame(FEATURED_GAME);
+        });
+      };
+    }
+  }
+
+  /* ---------- Language toggle (site-wide, persisted) ---------- */
+  var PAGE_I18N = Object.assign({}, ClazzApp.COMMON_I18N, {
+    navMyPage:{kr:'마이페이지', en:'My Page'},
+    heroEyebrow:{kr:'for every first lesson', en:'for every first lesson'},
+    heroLine1:{kr:'음악학원을 더욱 꽉 채워주는,', en:'Filling your piano studio even fuller,'},
+    heroLine2:{kr:'클래쯔피아노', en:'Clazz Piano'},
+    heroBtn1:{kr:'무료 워크지 받기', en:'Get free worksheets'},
+    heroBtn2:{kr:'게임 살펴보기', en:'See the games'},
+    wsKicker:{kr:'for the classroom', en:'for the classroom'},
+    wsTitle:{kr:'무료 워크지', en:'Free Worksheets'},
+    wsSub:{kr:'학원 수업에 바로 쓸 수 있도록 매달 새로 그리는 워크지예요. 종류를 골라 다운로드해서 바로 인쇄하실 수 있어요.', en:'New worksheets drawn every month. Pick a category and print them straight away.'},
+    wsCatColor:{kr:'색칠워크지', en:'Coloring'},
+    wsCatQuiz:{kr:'퀴즈워크지', en:'Quiz'},
+    wsCatMadeby:{kr:'made by 워크지', en:'Made by'},
+    wsMoreBtn:{kr:'워크지 더보기', en:'More worksheets'},
+    smKicker:{kr:'sheet music & MR', en:'sheet music & MR'},
+    smTitle:{kr:'악보+MR', en:'Sheet Music + MR'},
+    smSub:{kr:'클래쯔피아노 오리지널 소곡의 악보 PDF와 반주 MR 음원을 함께 다운로드할 수 있어요.',
+           en:'Download sheet music PDFs and MR backing tracks for Clazz Piano original pieces, bundled together.'},
+    smMoreBtn:{kr:'악보+MR 더보기', en:'More sheet music'},
+    gameKicker:{kr:'practice, on their own', en:'practice, on their own'},
+    gameTitle:{kr:'유료 웹 게임', en:'Premium Web Games'},
+    gameSub:{kr:'학원 수업 사이, 아이들이 스스로 박자를 익히는 시간을 만들어요.', en:'A moment between lessons where children learn rhythm on their own.'},
+    gameMoreBtn:{kr:'게임 더보기', en:'More games'}
+  });
+  // footerDesc contains <br> line breaks, so it must be applied as HTML
+  var footerDescEl = document.querySelector('[data-i18n="footerDesc"]');
+  if(footerDescEl) footerDescEl.setAttribute('data-i18n-html', '');
+
+  ClazzApp.onReady(function(){
+  ClazzApp.initLangToggle(PAGE_I18N, function(){
+    ClazzApp.paintAuthNav();
+    renderColorCards();
+    renderSheetMusicPreview();
+    renderFeaturedGame();
+  });
+  });
+})();
+</script>
+
+</body>
+</html>

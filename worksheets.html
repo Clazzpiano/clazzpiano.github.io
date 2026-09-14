@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>워크지 전체보기 · 클래쯔피아노</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <div class="header-row">
+    <a href="index.html" class="brand">
+      <img class="brand-logo" src="logo.png" alt="클래쯔피아노 Clazz Piano">
+      <span class="brand-kr" data-i18n="brandKr">클래쯔피아노</span>
+    </a>
+    <div class="header-right">
+      <button class="menu-toggle" id="menuToggle" aria-label="메뉴 열기" aria-expanded="false"><span></span><span></span><span></span></button>
+      <nav class="main-nav" id="mainNav">
+        <a class="nav-link" href="worksheets.html" data-i18n="navWorksheets">무료 워크지</a>
+        <a class="nav-link" href="sheetmusic.html" data-i18n="navSheetMusic">악보+MR</a>
+        <a class="nav-link" href="games.html" data-i18n="navGames">유료 게임</a>
+        <a class="nav-link" href="account.html" id="myPageLink">마이페이지</a>
+      </nav>
+      <div class="lang-toggle" role="group" aria-label="language toggle">
+        <button type="button" class="active" data-lang="kr" id="langKr">KR</button>
+        <button type="button" data-lang="en" id="langEn">EN</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap page-head">
+    <a class="back-link" href="index.html" data-i18n="backHome">← 홈으로</a>
+    <h1 data-i18n="pageTitle">워크지 전체보기</h1>
+    <p data-i18n="pageSub">색칠워크지는 회원이면 무료로, 퀴즈워크지와 made by 워크지는 구매하거나 구독 크레딧으로 다운로드할 수 있어요.</p>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <div class="category-tabs" role="tablist">
+        <button type="button" class="category-tab active" data-target="panel-color" role="tab" aria-selected="true" data-i18n="wsCatColor">색칠워크지</button>
+        <button type="button" class="category-tab" data-target="panel-quiz" role="tab" aria-selected="false" data-i18n="wsCatQuiz">퀴즈워크지</button>
+        <button type="button" class="category-tab" data-target="panel-madeby" role="tab" aria-selected="false" data-i18n="wsCatMadeby">made by 워크지</button>
+      </div>
+
+      <div class="worksheet-panel active" id="panel-color" role="tabpanel"><div class="card-grid" id="grid-color"></div></div>
+      <div class="worksheet-panel" id="panel-quiz" role="tabpanel"><div class="card-grid" id="grid-quiz"></div></div>
+      <div class="worksheet-panel" id="panel-madeby" role="tabpanel"><div class="card-grid" id="grid-madeby"></div></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h4 data-i18n="brandKr">클래쯔피아노</h4>
+        <p data-i18n="footerDesc" data-i18n-html>음악학원을 위한 수업자료를 만듭니다.<br><br>배움안에 즐거움과 행복이 함께하는 그 지점을 만들어가고 있어요.</p>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footerInfoTitle">사업자 정보</h4>
+        <ul class="footer-links">
+          <li data-i18n="footerInfoName">상호 : 클래쯔피아노</li>
+          <li data-i18n="footerInfoContact">문의 : hello@clazzpiano.kr</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 data-i18n="footerMoreTitle">더보기</h4>
+        <ul class="footer-links"><li><a href="pricing.html" data-i18n="footerPricing">구독 플랜</a></li></ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Clazz Piano. All rights reserved.</span>
+      <span data-i18n="footerNote">본 사이트는 데모 버전이며 일부 기능은 준비 중입니다.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Payment modal -->
+<div class="modal-overlay" id="paymentModal" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <button class="modal-close" data-close="paymentModal">&times;</button>
+    <div class="pay-step active" id="payStepMethod">
+      <h3><span id="payTitleText">결제 수단 선택</span></h3>
+      <p class="modal-sub"><span id="paySubText"></span></p>
+      <div class="pay-methods">
+        <label class="pay-method selected"><input type="radio" name="payMethod" value="toss" checked><span data-i18n="payToss">토스페이먼츠로 결제</span></label>
+        <label class="pay-method"><input type="radio" name="payMethod" value="portone"><span data-i18n="payPortone">포트원 카드 결제</span></label>
+      </div>
+      <div class="pay-summary"><span data-i18n="paySummaryLabel">결제 금액</span><strong id="payAmountText"></strong></div>
+      <button class="btn btn-gold" style="width:100%" id="confirmPayBtn" data-i18n="payConfirm">결제 진행</button>
+    </div>
+    <div class="pay-step" id="payStepProcessing">
+      <div class="spinner"></div>
+      <p class="pay-processing-text" data-i18n="payProcessing">결제를 진행하고 있어요. 잠시만 기다려 주세요.</p>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
+<script src="app.js"></script>
+<script>
+(function(){
+  var $ = ClazzApp.$, $all = ClazzApp.$all;
+  ClazzApp.initModalDismiss();
+
+  var menuToggle = $('#menuToggle');
+  var mainNav = $('#mainNav');
+  menuToggle.addEventListener('click', function(){
+    var isOpen = mainNav.classList.toggle('open');
+    menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+
+  $all('.category-tab').forEach(function(tab){
+    tab.addEventListener('click', function(){
+      $all('.category-tab').forEach(function(t){ t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected','true');
+      var target = tab.getAttribute('data-target');
+      $all('.worksheet-panel').forEach(function(p){ p.classList.toggle('active', p.id === target); });
+    });
+  });
+
+  function cardForFreeSheet(sheet){
+    var card = document.createElement('article');
+    card.className = 'worksheet-card';
+    var lang = ClazzApp.getLang();
+    var loggedIn = ClazzApp.isLoggedIn();
+    var btnLabel = loggedIn
+      ? (lang === 'en' ? 'Download free PDF' : '무료 PDF 다운로드')
+      : (lang === 'en' ? 'Log in to download' : '로그인하고 다운로드');
+    var freeTag = lang === 'en' ? 'Free (members only)' : '무료 (회원 전용)';
+    card.innerHTML =
+      '<h3>' + ClazzApp.t(sheet.name) + '</h3>' +
+      '<p>' + ClazzApp.t(sheet.desc) + '</p>' +
+      '<div class="card-price-row"><span class="price-tag free">' + freeTag + '</span></div>' +
+      '<button class="btn btn-outline">' + btnLabel + '</button>';
+    card.querySelector('button').addEventListener('click', function(){
+      if(!loggedIn){
+        ClazzApp.requireLogin(window.location.href);
+        return;
+      }
+      ClazzApp.downloadStorageFile(ClazzApp.worksheetStoragePath(sheet), ClazzApp.t(sheet.name));
+      ClazzApp.logFreeDownload(sheet.id);
+      ClazzApp.showToast(lang === 'en' ? 'Downloading the worksheet.' : '워크지 다운로드를 시작할게요.');
+    });
+    return card;
+  }
+
+  function cardForPaidSheet(sheet){
+    var card = document.createElement('article');
+    card.className = 'worksheet-card';
+    var lang = ClazzApp.getLang();
+    var loggedIn = ClazzApp.isLoggedIn();
+    var owned = loggedIn && ClazzApp.hasWorksheetAccess(sheet);
+    var ent = loggedIn ? ClazzApp.getEnt() : null;
+    var credits = ent ? ent.worksheetCredits : 0;
+
+    var ownedTag = lang === 'en' ? 'Purchased' : '구매 완료';
+    var creditsTag = lang === 'en' ? ('Credits: ' + credits) : ('크레딧 ' + credits + '개 보유');
+    var loginTag = lang === 'en' ? 'Login required' : '로그인 필요';
+
+    var priceRow = owned
+      ? '<div class="card-price-row"><span class="owned-badge">' + ownedTag + '</span></div>'
+      : '<div class="card-price-row"><span class="price-tag">' + ClazzApp.money(sheet.price) + '</span>' +
+        (loggedIn ? '<span class="lock-badge">' + creditsTag + '</span>' : '<span class="lock-badge">' + loginTag + '</span>') + '</div>';
+
+    var btnLabel;
+    if(!loggedIn) btnLabel = lang === 'en' ? 'Log in to check' : '로그인하고 확인하기';
+    else if(owned) btnLabel = lang === 'en' ? 'Download' : '다운로드';
+    else if(credits > 0) btnLabel = lang === 'en' ? 'Download with credit' : '크레딧으로 다운로드';
+    else btnLabel = lang === 'en' ? 'Buy' : '구매하기';
+
+    card.innerHTML =
+      '<h3>' + ClazzApp.t(sheet.name) + '</h3>' +
+      '<p>' + ClazzApp.t(sheet.desc) + '</p>' +
+      priceRow +
+      '<button class="btn btn-outline">' + btnLabel + '</button>';
+
+    card.querySelector('button').addEventListener('click', function(){
+      if(!loggedIn){ ClazzApp.requireLogin(window.location.href); return; }
+      if(owned){
+        ClazzApp.downloadStorageFile(ClazzApp.worksheetStoragePath(sheet), ClazzApp.t(sheet.name));
+        ClazzApp.showToast(lang === 'en' ? 'Downloading the worksheet.' : '워크지 다운로드를 시작할게요.');
+        return;
+      }
+      if(credits > 0){
+        var res = ClazzApp.useWorksheetCredit(sheet.id);
+        if(res.ok){
+          ClazzApp.downloadStorageFile(ClazzApp.worksheetStoragePath(sheet), ClazzApp.t(sheet.name));
+          ClazzApp.showToast(lang === 'en' ? 'Downloaded with your subscription credit.' : '구독 크레딧으로 다운로드했어요.');
+          renderAll();
+        }
+        return;
+      }
+      ClazzApp.openPaymentFlow(sheet, function(){
+        ClazzApp.grantWorksheetPurchase(sheet.id, sheet.price);
+        ClazzApp.downloadStorageFile(ClazzApp.worksheetStoragePath(sheet), ClazzApp.t(sheet.name));
+        renderAll();
+      });
+    });
+    return card;
+  }
+
+  function renderAll(){
+    var byCat = {color:[], quiz:[], madeby:[]};
+    ClazzApp.WORKSHEETS.forEach(function(w){ byCat[w.category].push(w); });
+
+    var colorGrid = $('#grid-color'); colorGrid.innerHTML = '';
+    if(byCat.color.length === 0){ colorGrid.innerHTML = ClazzApp.comingSoonHTML(); }
+    else{ byCat.color.forEach(function(s){ colorGrid.appendChild(cardForFreeSheet(s)); }); }
+
+    var quizGrid = $('#grid-quiz'); quizGrid.innerHTML = '';
+    if(byCat.quiz.length === 0){ quizGrid.innerHTML = ClazzApp.comingSoonHTML(); }
+    else{ byCat.quiz.forEach(function(s){ quizGrid.appendChild(cardForPaidSheet(s)); }); }
+
+    var madebyGrid = $('#grid-madeby'); madebyGrid.innerHTML = '';
+    if(byCat.madeby.length === 0){ madebyGrid.innerHTML = ClazzApp.comingSoonHTML(); }
+    else{ byCat.madeby.forEach(function(s){ madebyGrid.appendChild(cardForPaidSheet(s)); }); }
+  }
+
+  var PAGE_I18N = Object.assign({}, ClazzApp.COMMON_I18N, {
+    pageTitle:{kr:'워크지 전체보기', en:'All Worksheets'},
+    pageSub:{kr:'색칠워크지는 회원이면 무료로, 퀴즈워크지와 made by 워크지는 구매하거나 구독 크레딧으로 다운로드할 수 있어요.',
+             en:'Coloring worksheets are free for members. Quiz and Made-by worksheets can be purchased or downloaded with subscription credits.'},
+    wsCatColor:{kr:'색칠워크지', en:'Coloring'},
+    wsCatQuiz:{kr:'퀴즈워크지', en:'Quiz'},
+    wsCatMadeby:{kr:'made by 워크지', en:'Made by'}
+  });
+
+  ClazzApp.onReady(function(){
+  ClazzApp.initLangToggle(PAGE_I18N, function(){
+    ClazzApp.paintAuthNav();
+    renderAll();
+  });
+  });
+})();
+</script>
+
+</body>
+</html>
