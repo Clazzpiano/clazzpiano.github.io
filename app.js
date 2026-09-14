@@ -103,7 +103,7 @@ window.ClazzApp = (function(){
   // Shared strings reused across every page's header/footer/common modals.
   var COMMON_I18N = {
     brandKr:{kr:'클래쯔피아노', en:'Clazz Piano'},
-    navWorksheets:{kr:'무료 워크지', en:'Free Sheets'},
+    navWorksheets:{kr:'워크지', en:'Worksheets'},
     navGames:{kr:'유료 게임', en:'Premium Games'},
     navSheetMusic:{kr:'악보+MR', en:'Sheet Music+MR'},
     footerInfoTitle:{kr:'사업자 정보', en:'Business Info'},
