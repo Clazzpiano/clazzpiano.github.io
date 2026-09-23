@@ -109,6 +109,7 @@ window.ClazzApp = (function(){
     footerInfoTitle:{kr:'사업자 정보', en:'Business Info'},
     footerInfoName:{kr:'상호 : 클래쯔피아노', en:'Name: Clazz Piano'},
     footerInfoBizNum:{kr:'사업자등록번호 : 384-91-01851', en:'Business Reg. No.: 384-91-01851'},
+    footerInfoMailOrder:{kr:'통신판매업신고번호 : 2026-고양덕양구-2341호', en:'Mail Order Sales Business No.: 2026-Goyang Deogyang-gu-2341'},
     footerInfoAddress:{kr:'주소 : 경기도 덕양구 화신로 234, 백양빌딩 301호', en:'Address: 234 Hwasin-ro, Deogyang-gu, Gyeonggi-do, Room 301, Baekyang Bldg.'},
     footerInfoPhone:{kr:'전화 : 010-5929-6243', en:'Phone: 010-5929-6243'},
     footerInfoContact:{kr:'문의 : mihyun555@gmail.com', en:'Contact: mihyun555@gmail.com'},
