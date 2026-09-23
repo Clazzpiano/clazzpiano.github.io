@@ -182,6 +182,7 @@
         <p data-i18n="gameSub">학원 수업 사이, 아이들이 스스로 박자를 익히는 시간을 만들어요.</p>
       </div>
 
+      <div id="gameCardWrap">
       <div class="game-card">
         <div class="game-media">
           <svg viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -214,6 +215,7 @@
           </div>
           <button class="btn btn-gold" id="startPaymentBtn">결제하고 바로 시작하기</button>
         </div>
+      </div>
       </div>
 
       <div class="section-more">
@@ -513,9 +515,14 @@
 
   /* ---------- Featured game card (로그인/구매 상태 + 언어에 따라 렌더링) ---------- */
   var FEATURED_GAME = ClazzApp.findGame('ddgd-rhythm');
+  var gameCardWrap = $('#gameCardWrap');
   var payBtn = $('#startPaymentBtn');
 
   function renderFeaturedGame(){
+    if(!FEATURED_GAME){
+      gameCardWrap.innerHTML = ClazzApp.comingSoonHTML();
+      return;
+    }
     $('#featuredGameTitle').textContent = ClazzApp.t(FEATURED_GAME.name);
     $('#featuredGameDesc').textContent = ClazzApp.t(FEATURED_GAME.desc);
     var tagsWrap = $('#featuredGameTags');
@@ -526,6 +533,7 @@
   }
 
   function refreshGameButton(){
+    if(!FEATURED_GAME) return;
     var lang = ClazzApp.getLang();
     if(!ClazzApp.isLoggedIn()){
       payBtn.textContent = lang === 'en' ? 'Log in to check' : '로그인하고 확인하기';

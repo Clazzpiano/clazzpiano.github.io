@@ -166,6 +166,7 @@
   function renderAll(){
     var grid = $('#gameGrid');
     grid.innerHTML = '';
+    if(ClazzApp.GAMES.length === 0){ grid.innerHTML = ClazzApp.comingSoonHTML(); return; }
     ClazzApp.GAMES.forEach(function(g){ grid.appendChild(cardForGame(g)); });
   }
 

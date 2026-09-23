@@ -150,23 +150,11 @@ window.ClazzApp = (function(){
   }
 
   /* ---------- Product catalog (bilingual: use t(field) to read the active language) ---------- */
+  // 실제 게임이 사이트에 연결되기 전까지는 비워둡니다 (게임 목록에 "Coming Soon" 표시).
+  // 게임이 준비되면 아래 예시와 같은 형태로 GAMES 배열에 넣어주세요.
+  // { id:'고유id', name:{kr:'...', en:'...'}, desc:{kr:'...', en:'...'}, price:5900,
+  //   tags:{kr:['...'], en:['...']} }
   var GAMES = [
-    {
-      id:'ddgd-rhythm',
-      name:{kr:'두근두근 박자놀이', en:'Heartbeat Rhythm Play'},
-      desc:{kr:'화면 위로 흐르는 음표를 보며 손으로 직접 박자를 치는 타악기 리듬 게임이에요.',
-            en:'A percussion rhythm game where kids tap along to notes flowing across the screen.'},
-      price:5900,
-      tags:{kr:['6세 ~ 초등', 'BPM 5단계', '난이도 5단계'], en:['Age 6+', '5 BPM levels', '5 difficulty levels']}
-    },
-    {
-      id:'note-brain',
-      name:{kr:'계이름 브레인', en:'Note Name Brain'},
-      desc:{kr:'오선보 위로 흐르는 음표를 보고 도~시 버튼을 눌러 계이름을 맞히는 게임이에요. 음역대와 템포를 골라 난이도를 조절할 수 있어요.',
-            en:'Watch notes scroll across the staff and tap the matching do-re-mi button. Adjust the note range and tempo to change difficulty.'},
-      price:5900,
-      tags:{kr:['6세 ~ 초등', '계이름 학습', '콤보 점수제'], en:['Age 6+', 'Note-name learning', 'Combo scoring']}
-    }
   ];
 
   // 실제 워크지/악보 파일이 Storage에 업로드되기 전까지는 비워둡니다.
@@ -616,7 +604,8 @@ window.ClazzApp = (function(){
 
   // Storage 경로 규칙: worksheets/free/{id}.pdf, worksheets/paid/{id}.pdf, sheetmusic/{id}.pdf (MR 음원은 {id}-mr.mp3)
   function worksheetStoragePath(sheet){
-    return 'worksheets/' + (sheet.free ? 'free' : 'paid') + '/' + sheet.id + '/' + sheet.id + '.pdf';
+    var lang = getLang();
+    return 'worksheets/' + (sheet.free ? 'free' : 'paid') + '/' + sheet.id + '/' + lang + '/' + sheet.id + '.pdf';
   }
   function sheetMusicPdfPath(item){ return 'sheetmusic/' + item.id + '/' + item.id + '.pdf'; }
   function sheetMusicMrPath(item){ return 'sheetmusic/' + item.id + '/' + item.id + '-mr.mp3'; }
