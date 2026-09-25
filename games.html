@@ -104,6 +104,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-functions-compat.js"></script>
+<script src="https://cdn.iamport.kr/v1/iamport.js"></script>
 <script src="app.js"></script>
 <script>
 (function(){
@@ -153,8 +155,9 @@
     tile.querySelector('button').addEventListener('click', function(){
       if(!loggedIn){ ClazzApp.requireLogin(window.location.href); return; }
       if(owned){ ClazzApp.launchGame(game); return; }
-      ClazzApp.openPaymentFlow(game, function(){
-        ClazzApp.grantGamePurchase(game.id, game.price);
+      var chargeProduct = { name: game.name, price: game.price, type: 'game', id: game.id };
+      ClazzApp.openPaymentFlow(chargeProduct, function(){
+        // 구매 확정은 서버(Cloud Functions)가 결제를 검증한 뒤 이미 처리했어요.
         renderAll();
         ClazzApp.launchGame(game);
       });

@@ -89,6 +89,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-functions-compat.js"></script>
+<script src="https://cdn.iamport.kr/v1/iamport.js"></script>
 <script src="app.js"></script>
 <script>
 (function(){
@@ -195,8 +197,9 @@
     }else{
       card.querySelector('[data-dl="buy"]').addEventListener('click', function(){
         if(!loggedIn){ ClazzApp.requireLogin(window.location.href); return; }
-        ClazzApp.openPaymentFlow(item, function(){
-          ClazzApp.grantSheetMusicPurchase(item.id, item.price);
+        var chargeProduct = { name: item.name, price: item.price, type: 'sheetmusic', id: item.id };
+        ClazzApp.openPaymentFlow(chargeProduct, function(){
+          // 구매 확정은 서버(Cloud Functions)가 결제를 검증한 뒤 이미 처리했어요.
           renderAll();
         });
       });
