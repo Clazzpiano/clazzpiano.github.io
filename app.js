@@ -141,8 +141,8 @@ window.ClazzApp = (function(){
     footerNote:{kr:'본 사이트는 데모 버전이며 일부 기능은 준비 중입니다.', en:'This site is a demo — some features are still in progress.'},
     footerDesc:{kr:'음악학원을 위한 수업자료를 만듭니다.<br><br>배움안에 즐거움과 행복이 함께하는 그 지점을 만들어가고 있어요.', en:'We make lesson materials for piano studios.<br><br>Building a place where joy and happiness live inside learning.'},
     backHome:{kr:'← 홈으로', en:'← Home'},
-    payToss:{kr:'토스페이먼츠로 결제', en:'Pay with Toss Payments'},
-    payPortone:{kr:'포트원 카드 결제', en:'Pay with PortOne'},
+    payToss:{kr:'신용카드 결제', en:'Pay by credit card'},
+    payPortone:{kr:'신용카드 결제 (예비 수단)', en:'Pay by credit card (backup)'},
     paySummaryLabel:{kr:'결제 금액', en:'Total'},
     payConfirm:{kr:'결제 진행', en:'Proceed to pay'},
     payProcessing:{kr:'결제를 진행하고 있어요. 잠시만 기다려 주세요.', en:'Processing your payment. One moment.'},
@@ -557,6 +557,8 @@ window.ClazzApp = (function(){
      서버 스케줄러(cron)가 매달 재청구를 실행해야 하며,
      이 부분은 브라우저 JS만으로는 안전하게 구현할 수 없습니다.
      ========================================================= */
+  var IMP_STORE_CODE = 'imp47257084';
+
   function openPaymentFlow(product, onSuccess){
     var titleEl = $('#payTitleText');
     var subEl = $('#paySubText');
@@ -583,24 +585,63 @@ window.ClazzApp = (function(){
         $('#payStepMethod').classList.remove('active');
         $('#payStepProcessing').classList.add('active');
 
-        // ---- 실제 연동 지점 ----
-        // const method = document.querySelector('input[name="payMethod"]:checked').value;
-        // if (method === 'toss') {
-        //   const tossPayments = TossPayments('YOUR_CLIENT_KEY');
-        //   tossPayments.requestPayment('카드', { amount: product.price, orderId: ..., orderName: product.name, ... });
-        // } else {
-        //   IMP.init('YOUR_PORTONE_USER_CODE');
-        //   IMP.request_pay({ pg:'html5_inicis', merchant_uid:..., name:product.name, amount:product.price }, function(rsp){
-        //     if(rsp.success) handlePaymentSuccess();
-        //   });
-        // }
+        var selectedMethod = document.querySelector('input[name="payMethod"]:checked');
+        // ⚠️ 지금은 "테스트" 채널(KG이니시스, MID: INIpayTest) 하나만 만들어져 있어서
+        // 이 코드를 그대로 씁니다. 나중에 KCP/KG이니시스 실연동(카드사 심사 통과) 채널이
+        // 생기면, 그때 실제 채널에 맞는 pg 값으로 바꿔드릴게요.
+        var pgCode = 'html5_inicis.INIpayTest';
+        // ⚠️ pgCode: 포트원 콘솔의 "채널 관리"에 등록된 실제 채널 식별자와 다를 수 있어요.
+        // 결제창이 안 뜨거나 오류가 나면, 포트원 관리자 콘솔 > 채널 관리에서 정확한 값을 확인해서 알려주세요.
 
-        // 데모용 결제 시뮬레이션 — 실제 연동 시 아래 두 줄 제거
-        setTimeout(function(){
-          closeModal('paymentModal');
-          showToast(getLang() === 'en' ? 'Payment complete.' : '결제가 완료됐어요.');
-          onSuccess();
-        }, 1600);
+        var merchantUid = 'clazzpiano_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+        var user = currentUser();
+
+        if(typeof IMP === 'undefined'){
+          $('#payStepProcessing').classList.remove('active');
+          $('#payStepMethod').classList.add('active');
+          showToast(lang === 'en' ? 'Payment module failed to load. Please refresh and try again.' : '결제 모듈을 불러오지 못했어요. 새로고침 후 다시 시도해주세요.');
+          return;
+        }
+
+        IMP.init(IMP_STORE_CODE);
+        IMP.request_pay({
+          pg: pgCode,
+          pay_method: 'card',
+          merchant_uid: merchantUid,
+          name: t(product.name),
+          amount: product.price,
+          buyer_email: user ? user.email : '',
+          buyer_name: user ? user.name : ''
+        }, function(rsp){
+          if(!rsp.success){
+            $('#payStepProcessing').classList.remove('active');
+            $('#payStepMethod').classList.add('active');
+            showToast(rsp.error_msg || (lang === 'en' ? 'Payment was cancelled.' : '결제가 취소됐어요.'));
+            return;
+          }
+
+          // 브라우저가 "성공했다"고 말하는 걸 그대로 믿지 않고, 서버(Cloud Functions)가
+          // 포트원에 직접 물어봐서 실제 결제/금액을 확인한 뒤에만 구매를 확정합니다.
+          var verifyPayment = fbFunctions.httpsCallable('verifyPayment');
+          verifyPayment({
+            impUid: rsp.imp_uid,
+            expectedAmount: product.price,
+            productType: product.type,
+            productId: product.id
+          }).then(function(){
+            return refreshEntitlements();
+          }).then(function(){
+            closeModal('paymentModal');
+            showToast(lang === 'en' ? 'Payment complete.' : '결제가 완료됐어요.');
+            onSuccess();
+          }).catch(function(err){
+            console.error('클래쯔피아노: 결제 검증 실패', err);
+            closeModal('paymentModal');
+            showToast(lang === 'en'
+              ? 'Payment could not be verified. Please contact support.'
+              : '결제 확인에 실패했어요. 카드사에서 실제로 결제가 됐다면 문의(mihyun555@gmail.com)로 연락해주세요.');
+          });
+        });
       };
     }
   }
@@ -625,6 +666,16 @@ window.ClazzApp = (function(){
 
   /* ---------- Free worksheet download (placeholder PDF) ---------- */
   var fbStorage = firebase.storage();
+  var fbFunctions = firebase.functions();
+
+  // 결제 검증 함수(Cloud Functions)가 서버에서 이미 Firestore를 갱신했으므로,
+  // 여기서는 최신 상태를 다시 읽어와 화면용 캐시(CURRENT_ENT)만 새로고침합니다.
+  function refreshEntitlements(){
+    if(!CURRENT_USER_DOC) return Promise.resolve();
+    return db.collection('entitlements').doc(CURRENT_USER_DOC.uid).get().then(function(snap){
+      CURRENT_ENT = snap.exists ? snap.data() : defaultEnt();
+    });
+  }
 
   // Storage 경로 규칙: worksheets/free/{id}.pdf, worksheets/paid/{id}.pdf, sheetmusic/{id}.pdf (MR 음원은 {id}-mr.mp3)
   function worksheetStoragePath(sheet){
