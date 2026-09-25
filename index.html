@@ -127,15 +127,7 @@
       </div>
 
       <div class="worksheet-panel" id="panel-quiz" role="tabpanel">
-        <div class="empty-state">
-          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <circle cx="24" cy="24" r="18" stroke="#C5A059" stroke-width="1.6"/>
-            <path d="M19 19c0-3 2.2-5 5-5s5 2 5 4.5c0 3-3 3.5-4.3 5.3-.5.7-.7 1.5-.7 2.7" stroke="#0F321B" stroke-width="1.8" stroke-linecap="round"/>
-            <circle cx="24" cy="32.5" r="1.4" fill="#0F321B"/>
-          </svg>
-          <p>퀴즈워크지는 커밍순이에요. 준비되면 이 자리에서 만나요!</p>
-          <a class="btn btn-outline" href="worksheets.html">워크지 전체보기</a>
-        </div>
+        <div class="card-grid" id="quizCardGrid"></div>
       </div>
 
       <div class="worksheet-panel" id="panel-madeby" role="tabpanel">
@@ -437,6 +429,33 @@
     });
   }
 
+  /* ---------- Quiz worksheet preview (미리보기, 실제 구매는 워크지 전체보기에서) ---------- */
+  var quizSheets = ClazzApp.WORKSHEETS.filter(function(w){ return w.category === 'quiz'; }).slice(0, 3);
+  var quizGrid = $('#quizCardGrid');
+
+  function renderQuizPreview(){
+    quizGrid.innerHTML = '';
+    if(quizSheets.length === 0){ quizGrid.innerHTML = ClazzApp.comingSoonHTML(); return; }
+    var lang = ClazzApp.getLang();
+    quizSheets.forEach(function(sheet){
+      var priceInfo = ClazzApp.currentPrice(sheet);
+      var displayPrice = lang === 'en' ? ClazzApp.moneyUSD(priceInfo.usd) : ClazzApp.money(priceInfo.krw);
+      var saleTag = priceInfo.onSale
+        ? (lang === 'en' ? ('Sale until ' + priceInfo.until) : (priceInfo.until.replace(/-/g,'.') + '까지 할인가'))
+        : '';
+      var moreLabel = lang === 'en' ? 'See details & buy' : '자세히 보고 구매하기';
+      var card = document.createElement('article');
+      card.className = 'worksheet-card';
+      card.innerHTML =
+        '<h3>' + ClazzApp.t(sheet.name) + '</h3>' +
+        '<p>' + ClazzApp.t(sheet.desc) + '</p>' +
+        '<div class="card-price-row"><span class="price-tag">' + displayPrice + '</span>' +
+        (saleTag ? '<span class="owned-badge">' + saleTag + '</span>' : '') + '</div>' +
+        '<a class="btn btn-outline" href="worksheets.html">' + moreLabel + '</a>';
+      quizGrid.appendChild(card);
+    });
+  }
+
   /* ---------- Sheet music + MR preview (2개만 미리보기) ---------- */
   var sheetMusicGrid = $('#sheetMusicPreviewGrid');
   var PREVIEW_SHEET_MUSIC = ClazzApp.SHEET_MUSIC.slice(0, 2);
@@ -586,6 +605,7 @@
   ClazzApp.initLangToggle(PAGE_I18N, function(){
     ClazzApp.paintAuthNav();
     renderColorCards();
+    renderQuizPreview();
     renderSheetMusicPreview();
     renderFeaturedGame();
   });

@@ -52,6 +52,24 @@ window.ClazzApp = (function(){
   }
 
   function money(n){ return n.toLocaleString('ko-KR') + '원'; }
+  function moneyUSD(n){ return '$' + n.toFixed(2); }
+
+  // 상품에 priceSchedule이 있으면 "할인 종료일(한국시간 자정 기준)"을 지났는지에 따라
+  // KRW/USD 가격을 자동으로 골라줍니다. 없으면 그냥 기존 price/priceUSD를 그대로 씁니다.
+  function currentPrice(item){
+    if(!item.priceSchedule){
+      return { krw: item.price, usd: item.priceUSD, onSale: false };
+    }
+    var s = item.priceSchedule;
+    var cutoff = new Date(s.until + 'T23:59:59+09:00');
+    var onSale = new Date() <= cutoff;
+    return {
+      krw: onSale ? s.krwBefore : s.krwAfter,
+      usd: onSale ? s.usdBefore : s.usdAfter,
+      onSale: onSale,
+      until: s.until
+    };
+  }
 
   /* ---------- Language (site-wide, persisted) ---------- */
   var LS_LANG = 'cp_lang_v1';
@@ -108,6 +126,7 @@ window.ClazzApp = (function(){
     navSheetMusic:{kr:'악보+MR', en:'Sheet Music+MR'},
     footerInfoTitle:{kr:'사업자 정보', en:'Business Info'},
     footerInfoName:{kr:'상호 : 클래쯔피아노', en:'Name: Clazz Piano'},
+    footerInfoCeo:{kr:'대표 : 최미현', en:'CEO: Choi Mi-hyun'},
     footerInfoBizNum:{kr:'사업자등록번호 : 384-91-01851', en:'Business Reg. No.: 384-91-01851'},
     footerInfoMailOrder:{kr:'통신판매업신고번호 : 2026-고양덕양구-2341호', en:'Mail Order Sales Business No.: 2026-Goyang Deogyang-gu-2341'},
     footerInfoAddress:{kr:'주소 : 경기도 덕양구 화신로 234, 백양빌딩 301호', en:'Address: 234 Hwasin-ro, Deogyang-gu, Gyeonggi-do, Room 301, Baekyang Bldg.'},
@@ -177,7 +196,12 @@ window.ClazzApp = (function(){
     { id:'color-vol-7', category:'color', free:true, name:{kr:'색칠VOL.7', en:'Coloring Vol.7'},
       desc:{kr:'계이름, 음정을 복습하는 워크지예요.', en:'A worksheet reviewing note names and intervals.'} },
     { id:'color-vol-8', category:'color', free:true, name:{kr:'색칠VOL.8', en:'Coloring Vol.8'},
-      desc:{kr:'온음, 반음을 복습하는 워크지예요.', en:'A worksheet reviewing whole tones and half tones.'} }
+      desc:{kr:'온음, 반음을 복습하는 워크지예요.', en:'A worksheet reviewing whole tones and half tones.'} },
+    { id:'sudoku1', category:'quiz', free:false,
+      name:{kr:'4×4 수도쿠 워크지', en:'4×4 Sudoku Worksheet'},
+      desc:{kr:'4×4 수도쿠로 즐기는 워크지예요. 5가지 주제, 각 주제마다 쉬움·보통·어려움 3단계 난이도로 구성되어 있어서 7세부터 초등 3~4학년까지 폭넓게 사용하실 수 있어요.',
+            en:'A 4×4 Sudoku worksheet set with five themes, each in three difficulty levels (easy, normal, challenge) — great for ages 7 through 3rd–4th grade.'},
+      priceSchedule: { until:'2026-10-15', krwBefore:3900, krwAfter:4900, usdBefore:3.99, usdAfter:4.99 } }
   ];
 
   var WORKSHEET_CATEGORIES = [
@@ -605,7 +629,7 @@ window.ClazzApp = (function(){
   // Storage 경로 규칙: worksheets/free/{id}.pdf, worksheets/paid/{id}.pdf, sheetmusic/{id}.pdf (MR 음원은 {id}-mr.mp3)
   function worksheetStoragePath(sheet){
     var lang = getLang();
-    return 'worksheets/' + (sheet.free ? 'free' : 'paid') + '/' + sheet.id + '/' + lang + '/' + sheet.id + '.pdf';
+    return 'worksheets/' + (sheet.free ? 'free' : 'paid') + '/' + sheet.id + '/' + sheet.id + '-' + lang + '.pdf';
   }
   function sheetMusicPdfPath(item){ return 'sheetmusic/' + item.id + '/' + item.id + '.pdf'; }
   function sheetMusicMrPath(item){ return 'sheetmusic/' + item.id + '/' + item.id + '-mr.mp3'; }
@@ -685,7 +709,7 @@ window.ClazzApp = (function(){
 
   return {
     $:$, $all:$all, showToast:showToast, openModal:openModal, closeModal:closeModal,
-    initModalDismiss:initModalDismiss, money:money, formatDate:formatDate,
+    initModalDismiss:initModalDismiss, money:money, moneyUSD:moneyUSD, currentPrice:currentPrice, formatDate:formatDate,
 
     getLang:getLang, setLang:setLang, t:t, applyI18n:applyI18n,
     initLangToggle:initLangToggle, COMMON_I18N:COMMON_I18N,

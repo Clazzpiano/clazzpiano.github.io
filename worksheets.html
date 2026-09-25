@@ -66,6 +66,7 @@
         <h4 data-i18n="footerInfoTitle">사업자 정보</h4>
         <ul class="footer-links">
           <li data-i18n="footerInfoName">상호 : 클래쯔피아노</li>
+          <li data-i18n="footerInfoCeo">대표 : 최미현</li>
           <li data-i18n="footerInfoBizNum">사업자등록번호 : 384-91-01851</li>
           <li data-i18n="footerInfoMailOrder">통신판매업신고번호 : 2026-고양덕양구-2341호</li>
           <li data-i18n="footerInfoAddress">주소 : 경기도 덕양구 화신로 234, 백양빌딩 301호</li>
@@ -169,14 +170,20 @@
     var owned = loggedIn && ClazzApp.hasWorksheetAccess(sheet);
     var ent = loggedIn ? ClazzApp.getEnt() : null;
     var credits = ent ? ent.worksheetCredits : 0;
+    var priceInfo = ClazzApp.currentPrice(sheet);
+    var displayPrice = lang === 'en' ? ClazzApp.moneyUSD(priceInfo.usd) : ClazzApp.money(priceInfo.krw);
 
     var ownedTag = lang === 'en' ? 'Purchased' : '구매 완료';
     var creditsTag = lang === 'en' ? ('Credits: ' + credits) : ('크레딧 ' + credits + '개 보유');
     var loginTag = lang === 'en' ? 'Login required' : '로그인 필요';
+    var saleTag = priceInfo.onSale
+      ? (lang === 'en' ? ('Sale until ' + priceInfo.until) : (priceInfo.until.replace(/-/g,'.') + '까지 할인가'))
+      : null;
 
     var priceRow = owned
       ? '<div class="card-price-row"><span class="owned-badge">' + ownedTag + '</span></div>'
-      : '<div class="card-price-row"><span class="price-tag">' + ClazzApp.money(sheet.price) + '</span>' +
+      : '<div class="card-price-row"><span class="price-tag">' + displayPrice + '</span>' +
+        (saleTag ? '<span class="owned-badge">' + saleTag + '</span>' : '') +
         (loggedIn ? '<span class="lock-badge">' + creditsTag + '</span>' : '<span class="lock-badge">' + loginTag + '</span>') + '</div>';
 
     var btnLabel;
@@ -207,8 +214,11 @@
         }
         return;
       }
-      ClazzApp.openPaymentFlow(sheet, function(){
-        ClazzApp.grantWorksheetPurchase(sheet.id, sheet.price);
+      // 실제 결제는 항상 원화(KRW)로 이루어져요 — 지금 연결된 PG(KCP)가 국내 카드 결제만 지원하기 때문에,
+      // 화면엔 달러로 보여도 결제창에는 원화 금액이 뜹니다. (해외 카드/통화 결제는 추후 별도 연동 필요)
+      var chargeProduct = { name: sheet.name, price: priceInfo.krw };
+      ClazzApp.openPaymentFlow(chargeProduct, function(){
+        ClazzApp.grantWorksheetPurchase(sheet.id, priceInfo.krw);
         ClazzApp.downloadStorageFile(ClazzApp.worksheetStoragePath(sheet), ClazzApp.t(sheet.name));
         renderAll();
       });
