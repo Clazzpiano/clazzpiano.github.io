@@ -429,9 +429,12 @@ window.ClazzApp = (function(){
   function hasGameAccess(gameId){
     return isLoggedIn() && getEnt().ownedGameIds.indexOf(gameId) > -1;
   }
+  // 유료 워크지는 "상품id-언어" 조합으로 구매 여부를 구분해서, 한/영 버전이 각각 따로 결제돼요.
+  function worksheetLangId(sheet){ return sheet.id + '-' + getLang(); }
+
   function hasWorksheetAccess(sheet){
     if(sheet.free) return isLoggedIn();
-    return isLoggedIn() && getEnt().paidWorksheetIds.indexOf(sheet.id) > -1;
+    return isLoggedIn() && getEnt().paidWorksheetIds.indexOf(worksheetLangId(sheet)) > -1;
   }
   function hasSheetMusicAccess(item){
     return isLoggedIn() && (getEnt().ownedSheetMusicIds || []).indexOf(item.id) > -1;
@@ -530,7 +533,10 @@ window.ClazzApp = (function(){
     if(item.kind === 'game' || item.kind === 'game-slot'){
       var g = findGame(item.refId); if(g) refLabel = t(g.name);
     }else if(item.kind === 'worksheet' || item.kind === 'worksheet-credit'){
-      var w = findWorksheet(item.refId); if(w) refLabel = t(w.name);
+      var langSuffix = item.refId.match(/-(kr|en)$/);
+      var baseId = langSuffix ? item.refId.slice(0, -3) : item.refId;
+      var w = findWorksheet(baseId);
+      if(w) refLabel = t(w.name) + (langSuffix ? ' (' + langSuffix[1].toUpperCase() + ')' : '');
     }else if(item.kind === 'sheetmusic'){
       var sm = findSheetMusic(item.refId); if(sm) refLabel = t(sm.name);
     }else if(item.kind === 'subscription'){
@@ -787,7 +793,7 @@ window.ClazzApp = (function(){
     downloadWorksheetFile:downloadWorksheetFile,
     downloadStorageFile:downloadStorageFile,
     openSheetMusicPreview:openSheetMusicPreview,
-    worksheetStoragePath:worksheetStoragePath,
+    worksheetStoragePath:worksheetStoragePath, worksheetLangId:worksheetLangId,
     sheetMusicPdfPath:sheetMusicPdfPath,
     sheetMusicMrPath:sheetMusicMrPath
   };

@@ -113,6 +113,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-functions-compat.js"></script>
+<script src="https://cdn.iamport.kr/v1/iamport.js"></script>
 <script src="app.js"></script>
 <script>
 (function(){
@@ -206,7 +208,7 @@
         return;
       }
       if(credits > 0){
-        var res = ClazzApp.useWorksheetCredit(sheet.id);
+        var res = ClazzApp.useWorksheetCredit(ClazzApp.worksheetLangId(sheet));
         if(res.ok){
           ClazzApp.downloadStorageFile(ClazzApp.worksheetStoragePath(sheet), ClazzApp.t(sheet.name));
           ClazzApp.showToast(lang === 'en' ? 'Downloaded with your subscription credit.' : '구독 크레딧으로 다운로드했어요.');
@@ -216,9 +218,9 @@
       }
       // 실제 결제는 항상 원화(KRW)로 이루어져요 — 지금 연결된 PG(KCP)가 국내 카드 결제만 지원하기 때문에,
       // 화면엔 달러로 보여도 결제창에는 원화 금액이 뜹니다. (해외 카드/통화 결제는 추후 별도 연동 필요)
-      var chargeProduct = { name: sheet.name, price: priceInfo.krw };
+      var chargeProduct = { name: sheet.name, price: priceInfo.krw, type: 'worksheet', id: ClazzApp.worksheetLangId(sheet) };
       ClazzApp.openPaymentFlow(chargeProduct, function(){
-        ClazzApp.grantWorksheetPurchase(sheet.id, priceInfo.krw);
+        // 구매 확정(entitlements 반영)은 서버(Cloud Functions)가 결제를 검증한 뒤 이미 처리했어요.
         ClazzApp.downloadStorageFile(ClazzApp.worksheetStoragePath(sheet), ClazzApp.t(sheet.name));
         renderAll();
       });
