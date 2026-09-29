@@ -1060,3 +1060,8 @@
     -webkit-mask-image:radial-gradient(ellipse 72% 72% at 50% 50%, #000 62%, transparent 100%);
             mask-image:radial-gradient(ellipse 72% 72% at 50% 50%, #000 62%, transparent 100%);
   }
+
+  /* 악보 카드: 난이도·악기 태그, 문단 나눔 */
+  .sm-meta{display:flex; gap:6px; flex-wrap:wrap; margin-top:-6px;}
+  .sm-meta span{font-size:0.76rem; color:var(--green); border:1px solid var(--line); border-radius:999px; padding:3px 10px; background:var(--ivory-deep);}
+  .worksheet-card p.sm-desc, #smpDesc{white-space:pre-line;}

@@ -234,7 +234,14 @@ window.ClazzApp = (function(){
       name:{kr:'We wish you a merry Christmas', en:'We wish you a merry Christmas'},
       desc:{kr:'크리스마스 연주회나 미션곡으로 쓸 수 있도록 약간의 재즈 분위기를 넣은 only 피아노 연주곡이예요.',
             en:'A piano-only arrangement with a touch of jazz, perfect for a Christmas recital or as an assignment piece.'},
-      youtubeUrl:'https://youtu.be/JXUduEV90Wg?si=pxRY2gjR6I6HDCJL' }
+      youtubeUrl:'https://youtu.be/JXUduEV90Wg?si=pxRY2gjR6I6HDCJL' },
+    { id:'tchaikovsky-concerto-1', category:'classical', price:6900, hasMr:false,
+      youtubeUrl:'https://youtu.be/AqrNZo6yyCA?si=c0qH14uHMbxpyNlw',
+      level:{kr:'최상', en:'Expert'},
+      instrument:{kr:'피아노 솔로', en:'Piano solo'},
+      name:{kr:'차이코프스키 피아노 협주곡 1번 1악장', en:'Tchaikovsky Piano Concerto No. 1, 1st Movement'},
+      desc:{kr:'차이코프스키 피아노 협주곡 1번 1악장의 유명한 테마를 C 메이저(다장조)로 조바꿈하여 짧고 부담 없는 길이로 편곡한 솔로 피아노 버전입니다.\n\n원곡 오케스트라의 웅장하고 드라마틱한 정수를 그대로 담아내면서, 피아노 솔로 연주에 적합한 길이로 구성했습니다. 간결한 악보 안에서 풍부한 임시표와 위대한 클래식 테마를 경험할 수 있습니다.\n\n감정 표현과 강약 조절을 연습하기 위한 미션곡으로 훌륭하며, 연주회, 작은 음악회, 스튜디오 발표회용으로 좋습니다.',
+            en:'A solo piano arrangement of the famous theme from the first movement of Tchaikovsky\'s Piano Concerto No. 1, transposed to C major and shortened to a comfortable length.\n\nIt keeps the grand, dramatic essence of the original orchestral work while fitting the length of a piano solo. Within a concise score, students experience rich accidentals and one of the great classical themes.\n\nAn excellent assignment piece for practicing expression and dynamics, and a great choice for recitals, small concerts and studio performances.'} }
   ];
 
   var SHEET_MUSIC_CATEGORIES = [
@@ -245,6 +252,16 @@ window.ClazzApp = (function(){
     { id:'christmas', name:{kr:'크리스마스', en:'Christmas'} },
     { id:'parentsday', name:{kr:'어버이날', en:"Parents' Day"} }
   ];
+
+  // 악보 카드에 난이도·악기 정보를 작은 태그로 보여줘요 (level/instrument 가 있는 악보만)
+  function sheetMusicMetaHTML(item){
+    var lang = getLang();
+    var tags = [];
+    if(item.level) tags.push((lang === 'en' ? 'Level: ' : '난이도 ') + t(item.level));
+    if(item.instrument) tags.push(t(item.instrument));
+    if(!tags.length) return '';
+    return '<div class="sm-meta">' + tags.map(function(x){ return '<span>' + x + '</span>'; }).join('') + '</div>';
+  }
 
   // 카테고리에 상품이 아직 없을 때 보여줄 공통 "커밍순" 블록
   function comingSoonHTML(){
@@ -871,7 +888,7 @@ window.ClazzApp = (function(){
 
     GAMES:GAMES, WORKSHEETS:WORKSHEETS, TIERS:TIERS, SHEET_MUSIC:SHEET_MUSIC,
     WORKSHEET_CATEGORIES:WORKSHEET_CATEGORIES, SHEET_MUSIC_CATEGORIES:SHEET_MUSIC_CATEGORIES,
-    comingSoonHTML:comingSoonHTML,
+    comingSoonHTML:comingSoonHTML, sheetMusicMetaHTML:sheetMusicMetaHTML,
     findGame:findGame, findWorksheet:findWorksheet, findTier:findTier, findSheetMusic:findSheetMusic,
 
     signUp:signUp, logIn:logIn, logOut:logOut,

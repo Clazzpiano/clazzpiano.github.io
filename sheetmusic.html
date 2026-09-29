@@ -173,7 +173,8 @@
 
     card.innerHTML =
       '<h3>' + ClazzApp.t(item.name) + '</h3>' +
-      '<p>' + ClazzApp.t(item.desc) + '</p>' +
+      ClazzApp.sheetMusicMetaHTML(item) +
+      '<p class="sm-desc">' + ClazzApp.t(item.desc) + '</p>' +
       priceRow +
       '<button class="btn btn-outline" data-dl="preview" style="width:100%;margin-bottom:8px;">▶ ' + previewLabel + '</button>' +
       actionsHtml;
