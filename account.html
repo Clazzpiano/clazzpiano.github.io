@@ -22,7 +22,7 @@
       <nav class="main-nav" id="mainNav">
         <a class="nav-link" href="worksheets.html" data-i18n="navWorksheets">워크지</a>
         <a class="nav-link" href="sheetmusic.html" data-i18n="navSheetMusic">악보+MR</a>
-        <a class="nav-link" href="games.html" data-i18n="navGames">유료 게임</a>
+        <a class="nav-link" href="musiclab.html" data-i18n="navGames">클래쯔 뮤직랩</a>
         <a class="nav-link" href="account.html" id="myPageLink">마이페이지</a>
       </nav>
       <div class="lang-toggle" role="group" aria-label="language toggle">
@@ -125,7 +125,7 @@
     </div>
 
     <div class="account-card">
-      <h3 data-i18n="ownedGamesTitle">보유 게임</h3>
+      <h3 data-i18n="ownedGamesTitle">이용 중인 뮤직랩</h3>
       <ul class="owned-list" id="ownedGamesList"></ul>
     </div>
 
@@ -171,7 +171,6 @@
     </div>
     <div class="footer-bottom">
       <span>&copy; 2026 Clazz Piano. All rights reserved.</span>
-      <span data-i18n="footerNote">본 사이트는 데모 버전이며 일부 기능은 준비 중입니다.</span>
     </div>
   </div>
 </footer>
@@ -324,7 +323,7 @@
       var subbedLabel = lang === 'en' ? (tierName + ' — active') : (tierName + ' 구독 중');
       var renewLabel = lang === 'en' ? 'Next billing date ' : '다음 결제일 ';
       var perMonth = lang === 'en' ? '/mo' : '/월';
-      var slotsLabel = lang === 'en' ? 'Game slots used' : '게임 슬롯';
+      var slotsLabel = lang === 'en' ? 'Music Lab tools used' : '뮤직랩 교구';
       var slotsUsedWord = lang === 'en' ? '' : ' 사용';
       var creditsLabel = lang === 'en' ? 'Worksheet download credits left' : '남은 워크지 다운로드 크레딧';
       var creditsUnit = lang === 'en' ? '' : '개';
@@ -352,22 +351,61 @@
         '<a class="btn btn-gold" href="pricing.html">' + seeBtn + '</a>';
     }
 
-    // 보유 게임
+    // 이용 중인 뮤직랩 (정기결제 상태 + 해지)
     var gamesList = $('#ownedGamesList');
     gamesList.innerHTML = '';
-    if(ent.ownedGameIds.length === 0){
-      gamesList.innerHTML = '<li class="empty-line">' + (lang === 'en' ? "You don't own any games yet." : '아직 보유한 게임이 없어요.') + '</li>';
+    var labIds = Object.keys(ent.labSubscriptions || {});
+    (ent.ownedGameIds || []).forEach(function(id){ if(labIds.indexOf(id) === -1) labIds.push(id); });
+    labIds = labIds.filter(function(id){ return ClazzApp.findGame(id) && ClazzApp.hasGameAccess(id); });
+
+    if(labIds.length === 0){
+      gamesList.innerHTML = '<li class="empty-line">' + (lang === 'en' ? "You're not using any Music Lab tools yet." : '아직 이용 중인 뮤직랩 교구가 없어요.') +
+        ' <a href="musiclab.html" style="color:var(--green);text-decoration:underline;">' + (lang === 'en' ? 'Explore' : '둘러보기') + '</a></li>';
     }else{
-      ent.ownedGameIds.forEach(function(gameId){
-        var game = ClazzApp.findGame(gameId);
-        if(!game) return;
+      labIds.forEach(function(labId){
+        var item = ClazzApp.findGame(labId);
+        var sub = ClazzApp.labSubscription(labId);
         var li = document.createElement('li');
-        li.innerHTML = '<span>' + ClazzApp.t(game.name) + '</span>';
-        var btn = document.createElement('button');
-        btn.className = 'btn btn-outline';
-        btn.textContent = lang === 'en' ? 'Play' : '게임 이용하기';
-        btn.addEventListener('click', function(){ ClazzApp.launchGame(game); });
-        li.appendChild(btn);
+        var meta = '';
+        if(sub){
+          if(sub.status === 'active'){
+            meta = (lang === 'en' ? 'Next billing ' : '다음 결제일 ') + ClazzApp.formatDate(sub.nextBillingAt) + ' · ' + ClazzApp.money(sub.price) + (lang === 'en' ? '/mo' : '/월');
+          }else{
+            meta = (lang === 'en' ? 'Cancelled · available until ' : '해지됨 · 이용 가능 기한 ') + ClazzApp.formatDate(sub.accessUntil);
+          }
+        }
+        li.innerHTML = '<span>' + ClazzApp.t(item.name) + (meta ? '<span class="sub-meta">' + meta + '</span>' : '') + '</span>';
+
+        var actions = document.createElement('div');
+        actions.className = 'sub-actions';
+        var openBtn = document.createElement('button');
+        openBtn.className = 'btn btn-outline';
+        openBtn.textContent = lang === 'en' ? 'Open' : '시작하기';
+        openBtn.addEventListener('click', function(){ ClazzApp.launchGame(item); });
+        actions.appendChild(openBtn);
+
+        if(sub && sub.status === 'active'){
+          var cancelBtn = document.createElement('button');
+          cancelBtn.className = 'btn btn-outline';
+          cancelBtn.textContent = lang === 'en' ? 'Cancel billing' : '정기결제 해지';
+          cancelBtn.addEventListener('click', function(){
+            var msg = lang === 'en'
+              ? 'Cancel monthly billing? You can keep using it until ' + ClazzApp.formatDate(sub.accessUntil) + '.'
+              : '정기결제를 해지할까요? ' + ClazzApp.formatDate(sub.accessUntil) + '까지는 계속 이용할 수 있어요.';
+            if(!window.confirm(msg)) return;
+            cancelBtn.disabled = true;
+            ClazzApp.cancelSubscription('lab', labId).then(function(){
+              ClazzApp.showToast(lang === 'en' ? 'Monthly billing cancelled.' : '정기결제가 해지됐어요.');
+              renderDashboard();
+            }).catch(function(err){
+              console.error('클래쯔피아노: 해지 실패', err);
+              cancelBtn.disabled = false;
+              ClazzApp.showToast(lang === 'en' ? 'Could not cancel. Please contact us.' : '해지하지 못했어요. 문의(010-5929-6243)로 연락해주세요.');
+            });
+          });
+          actions.appendChild(cancelBtn);
+        }
+        li.appendChild(actions);
         gamesList.appendChild(li);
       });
     }
@@ -429,15 +467,15 @@
     }
   }
 
-  // 게임 플레이어 모달이 필요하므로 최소 마크업 삽입 (보유 게임 이용하기용)
+  // 뮤직랩 교구를 여는 플레이어 모달 (이용 중인 뮤직랩 '시작하기'용)
   var playerModal = document.createElement('div');
   playerModal.className = 'modal-overlay';
   playerModal.id = 'gamePlayerModal';
   playerModal.setAttribute('role','dialog');
   playerModal.innerHTML =
     '<div class="modal-box">' +
-      '<div class="player-topbar"><span class="serif" id="playerTitle">게임</span><button class="modal-close" data-close="gamePlayerModal">&times;</button></div>' +
-      '<div class="player-stage" id="playerStage"><div class="spinner"></div><p>게임을 불러오는 중입니다.</p></div>' +
+      '<div class="player-topbar"><span class="serif" id="playerTitle">클래쯔 뮤직랩</span><button class="modal-close" data-close="gamePlayerModal">&times;</button></div>' +
+      '<div class="player-stage" id="playerStage"><div class="spinner"></div><p>교구를 불러오는 중이에요.</p></div>' +
     '</div>';
   document.body.appendChild(playerModal);
   ClazzApp.initModalDismiss();
@@ -460,7 +498,7 @@
     authNote:{kr:'데모용 계정 시스템이에요. 비밀번호는 암호화 없이 이 브라우저에만 저장돼요.', en:'This is a demo account system. Passwords are stored unencrypted in this browser only.'},
     logoutBtn:{kr:'로그아웃', en:'Log out'},
     subStatusTitle:{kr:'구독 현황', en:'Subscription'},
-    ownedGamesTitle:{kr:'보유 게임', en:'My Games'},
+    ownedGamesTitle:{kr:'이용 중인 뮤직랩', en:'My Music Lab'},
     ownedSheetMusicTitle:{kr:'보유 악보+MR', en:'My Sheet Music'},
     historyTitle:{kr:'구매 · 다운로드 내역', en:'Purchase & Download History'}
   });

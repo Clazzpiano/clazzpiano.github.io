@@ -22,7 +22,7 @@
       <nav class="main-nav" id="mainNav">
         <a class="nav-link" href="worksheets.html" data-i18n="navWorksheets">워크지</a>
         <a class="nav-link" href="sheetmusic.html" data-i18n="navSheetMusic">악보+MR</a>
-        <a class="nav-link" href="games.html" data-i18n="navGames">유료 게임</a>
+        <a class="nav-link" href="musiclab.html" data-i18n="navGames">클래쯔 뮤직랩</a>
         <a class="nav-link" href="account.html" id="myPageLink">마이페이지</a>
       </nav>
       <div class="lang-toggle" role="group" aria-label="language toggle">
@@ -37,13 +37,13 @@
   <div class="wrap page-head">
     <a class="back-link" href="index.html" data-i18n="backHome">← 홈으로</a>
     <h1 data-i18n="pageTitle">구독 플랜</h1>
-    <p data-i18n="pageSub">게임과 워크지를 따로 사는 것보다 저렴하게, 매달 자동으로 이용할 수 있는 구독 플랜이에요.</p>
+    <p data-i18n="pageSub">뮤직랩 교구와 워크지를 따로 이용하는 것보다 알뜰하게, 매달 자동으로 이용할 수 있는 구독 플랜이에요.</p>
   </div>
 
   <section>
     <div class="wrap">
       <div class="pricing-grid" id="pricingGrid"></div>
-      <p class="pricing-note" data-i18n="pricingNote">정기결제 시뮬레이션입니다. 실제 서비스에서는 결제사(PG)가 발급하는 빌링키를 서버에 저장하고, 매달 자동으로 재청구하는 서버 스케줄러가 필요해요 — 이 부분은 브라우저만으로는 안전하게 구현할 수 없어 별도 백엔드 연동이 필요합니다.</p>
+      <p class="pricing-note" data-i18n="pricingNote" data-i18n-html>모든 플랜은 첫 결제일을 기준으로 매월 같은 날 자동 결제돼요. 마이페이지에서 언제든 해지할 수 있고, 해지하면 다음 결제일부터 청구되지 않아요. 환불 기준은 <a href="terms.html#refund">이용약관 제7조</a>를 확인해주세요.</p>
     </div>
   </section>
 </main>
@@ -53,11 +53,10 @@
     <div class="footer-grid">
       <div class="footer-brand"><h4 data-i18n="brandKr">클래쯔피아노</h4><p data-i18n="footerDesc" data-i18n-html>음악학원을 위한 수업자료를 만듭니다.<br><br>배움안에 즐거움과 행복이 함께하는 그 지점을 만들어가고 있어요.</p></div>
       <div class="footer-col"><h4 data-i18n="footerInfoTitle">사업자 정보</h4><ul class="footer-links"><li data-i18n="footerInfoName">상호 : 클래쯔피아노</li><li data-i18n="footerInfoCeo">대표 : 최미현</li><li data-i18n="footerInfoBizNum">사업자등록번호 : 384-91-01851</li><li data-i18n="footerInfoMailOrder">통신판매업신고번호 : 2026-고양덕양구-2341호</li><li data-i18n="footerInfoAddress">주소 : 경기도 덕양구 화신로 234, 백양빌딩 301호</li><li data-i18n="footerInfoPhone">전화 : 010-5929-6243</li><li data-i18n="footerInfoContact">문의 : mihyun555@gmail.com</li></ul></div>
-      <div class="footer-col"><h4 data-i18n="footerMoreTitle">더보기</h4><ul class="footer-links"><li><a href="games.html" data-i18n="footerGames">게임 보기</a></li><li><a href="terms.html" data-i18n="footerTerms">이용약관</a></li><li><a href="privacy.html" data-i18n="footerPrivacy">개인정보처리방침</a></li></ul></div>
+      <div class="footer-col"><h4 data-i18n="footerMoreTitle">더보기</h4><ul class="footer-links"><li><a href="musiclab.html" data-i18n="footerGames">클래쯔 뮤직랩</a></li><li><a href="terms.html" data-i18n="footerTerms">이용약관</a></li><li><a href="privacy.html" data-i18n="footerPrivacy">개인정보처리방침</a></li></ul></div>
     </div>
     <div class="footer-bottom">
       <span>&copy; 2026 Clazz Piano. All rights reserved.</span>
-      <span data-i18n="footerNote">본 사이트는 데모 버전이며 일부 기능은 준비 중입니다.</span>
     </div>
   </div>
 </footer>
@@ -70,8 +69,7 @@
       <h3><span id="payTitleText">결제 수단 선택</span></h3>
       <p class="modal-sub"><span id="paySubText"></span></p>
       <div class="pay-methods">
-        <label class="pay-method selected"><input type="radio" name="payMethod" value="toss" checked><span data-i18n="payTossSub">토스페이먼츠 정기결제로 등록</span></label>
-        <label class="pay-method"><input type="radio" name="payMethod" value="portone"><span data-i18n="payPortoneSub">포트원 정기결제로 등록</span></label>
+        <label class="pay-method selected"><input type="radio" name="payMethod" value="toss" checked><span data-i18n="payTossSub">신용카드 정기결제 등록</span></label>
       </div>
       <div class="pay-summary"><span data-i18n="paySummaryMonthly">매달 결제 금액</span><strong id="payAmountText"></strong></div>
       <button class="btn btn-gold" style="width:100%" id="confirmPayBtn" data-i18n="payConfirmSub">구독 시작하기</button>
@@ -117,8 +115,8 @@
 
     var featuredTag = lang === 'en' ? 'Most popular' : '가장 인기';
     var perMonth = lang === 'en' ? ' / mo' : ' / 월';
-    var gamesLabel = lang === 'en' ? ' game pass(es)' : '개 이용권';
-    var gamesPrefix = lang === 'en' ? 'Games: ' : '게임 ';
+    var gamesLabel = lang === 'en' ? ' tool(s)' : '개';
+    var gamesPrefix = lang === 'en' ? 'Music Lab: ' : '뮤직랩 교구 ';
     var wsPrefix = lang === 'en' ? 'Worksheets: ' : '워크지 ';
     var wsLabel = lang === 'en' ? ' downloads' : '개 다운로드';
     var renewLine = lang === 'en' ? 'Auto-renews monthly (subscription)' : '매달 자동 갱신 (정기결제)';
@@ -153,8 +151,8 @@
             return;
           }
           var subLabel = {kr: tier.name.kr + ' 구독', en: tier.name.en + ' Subscription'};
-          ClazzApp.openPaymentFlow({name: subLabel, price: tier.price}, function(){
-            ClazzApp.subscribeTier(tier.id);
+          ClazzApp.openPaymentFlow({name: subLabel, price: tier.price, type: 'tier', id: tier.id, recurring: true}, function(){
+            // 구독 확정(크레딧·이용권 지급)은 서버(Cloud Functions)가 포트원에 확인한 뒤 이미 처리했어요.
             ClazzApp.showToast(ClazzApp.t(tier.name) + (lang === 'en' ? ' subscription started.' : ' 구독이 시작됐어요.'));
             setTimeout(function(){ window.location.href = 'account.html'; }, 900);
           });
@@ -167,13 +165,12 @@
 
   var PAGE_I18N = Object.assign({}, ClazzApp.COMMON_I18N, {
     pageTitle:{kr:'구독 플랜', en:'Subscription Plans'},
-    pageSub:{kr:'게임과 워크지를 따로 사는 것보다 저렴하게, 매달 자동으로 이용할 수 있는 구독 플랜이에요.',
-             en:'Cheaper than buying games and worksheets separately, billed automatically every month.'},
-    pricingNote:{kr:'정기결제 시뮬레이션입니다. 실제 서비스에서는 결제사(PG)가 발급하는 빌링키를 서버에 저장하고, 매달 자동으로 재청구하는 서버 스케줄러가 필요해요 — 이 부분은 브라우저만으로는 안전하게 구현할 수 없어 별도 백엔드 연동이 필요합니다.',
-                 en:'This recurring payment is simulated. A real service needs to store the PG billing key on a server and re-charge automatically every month via a server-side scheduler — this cannot be done safely in the browser alone.'},
-    footerGames:{kr:'게임 보기', en:'See games'},
-    payTossSub:{kr:'토스페이먼츠 정기결제로 등록', en:'Register recurring billing with Toss Payments'},
-    payPortoneSub:{kr:'포트원 정기결제로 등록', en:'Register recurring billing with PortOne'},
+    pageSub:{kr:'뮤직랩 교구와 워크지를 따로 이용하는 것보다 알뜰하게, 매달 자동으로 이용할 수 있는 구독 플랜이에요.',
+             en:'Better value than using Music Lab tools and worksheets separately, billed automatically every month.'},
+    pricingNote:{kr:'모든 플랜은 첫 결제일을 기준으로 매월 같은 날 자동 결제돼요. 마이페이지에서 언제든 해지할 수 있고, 해지하면 다음 결제일부터 청구되지 않아요. 환불 기준은 <a href="terms.html#refund">이용약관 제7조</a>를 확인해주세요.',
+                 en:'All plans are billed automatically on the same day each month as your first payment. Cancel anytime from My Page and billing stops from the next billing date. See <a href="terms.html#refund">Terms, Article 7</a> for refunds.'},
+    footerGames:{kr:'클래쯔 뮤직랩', en:'Clazz Music Lab'},
+    payTossSub:{kr:'신용카드 정기결제 등록', en:'Register a card for monthly billing'},
     paySummaryMonthly:{kr:'매달 결제 금액', en:'Monthly amount'},
     payConfirmSub:{kr:'구독 시작하기', en:'Start subscription'},
     payProcessingSub:{kr:'구독 결제를 진행하고 있어요. 잠시만 기다려 주세요.', en:'Processing your subscription. One moment.'}

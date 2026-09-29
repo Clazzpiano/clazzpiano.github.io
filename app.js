@@ -122,7 +122,8 @@ window.ClazzApp = (function(){
   var COMMON_I18N = {
     brandKr:{kr:'클래쯔피아노', en:'Clazz Piano'},
     navWorksheets:{kr:'워크지', en:'Worksheets'},
-    navGames:{kr:'유료 게임', en:'Premium Games'},
+    navGames:{kr:'클래쯔 뮤직랩', en:'Clazz Music Lab'},
+    labTagline:{kr:'음악을 직접 느끼며 배우는 디지털 교구', en:'Digital learning tools for feeling music firsthand'},
     navSheetMusic:{kr:'악보+MR', en:'Sheet Music+MR'},
     footerInfoTitle:{kr:'사업자 정보', en:'Business Info'},
     footerInfoName:{kr:'상호 : 클래쯔피아노', en:'Name: Clazz Piano'},
@@ -138,10 +139,10 @@ window.ClazzApp = (function(){
     footerPrivacy:{kr:'개인정보처리방침', en:'Privacy Policy'},
     footerPatch:{kr:'패치노트', en:'Patch notes'},
     footerBug:{kr:'버그 제보', en:'Report a bug'},
-    footerNote:{kr:'본 사이트는 데모 버전이며 일부 기능은 준비 중입니다.', en:'This site is a demo — some features are still in progress.'},
     footerDesc:{kr:'음악학원을 위한 수업자료를 만듭니다.<br><br>배움안에 즐거움과 행복이 함께하는 그 지점을 만들어가고 있어요.', en:'We make lesson materials for piano studios.<br><br>Building a place where joy and happiness live inside learning.'},
     backHome:{kr:'← 홈으로', en:'← Home'},
     payToss:{kr:'신용카드 결제', en:'Pay by credit card'},
+    paySubMethod:{kr:'신용카드 정기결제 등록', en:'Register a card for monthly billing'},
     payPortone:{kr:'신용카드 결제 (예비 수단)', en:'Pay by credit card (backup)'},
     paySummaryLabel:{kr:'결제 금액', en:'Total'},
     payConfirm:{kr:'결제 진행', en:'Proceed to pay'},
@@ -169,11 +170,18 @@ window.ClazzApp = (function(){
   }
 
   /* ---------- Product catalog (bilingual: use t(field) to read the active language) ---------- */
-  // 실제 게임이 사이트에 연결되기 전까지는 비워둡니다 (게임 목록에 "Coming Soon" 표시).
-  // 게임이 준비되면 아래 예시와 같은 형태로 GAMES 배열에 넣어주세요.
-  // { id:'고유id', name:{kr:'...', en:'...'}, desc:{kr:'...', en:'...'}, price:5900,
-  //   tags:{kr:['...'], en:['...']} }
+  // 새 교구를 추가할 때는 아래 계이름 브레인과 같은 형태로 넣어주세요.
+  // ⚠️ 가격을 바꾸면 서버(functions/subscription.js)의 PRODUCTS 가격도 똑같이 바꿔야 해요.
+  // 클래쯔 뮤직랩(디지털 교구) 상품 목록 — 변수 이름은 기존 코드 호환을 위해 GAMES 그대로 둡니다.
+  // billing:'monthly' 인 상품은 매월 자동결제(정기결제)로 판매돼요.
+  // url: 실제 교구 페이지 주소(비워두면 '준비 중' 화면이 떠요)
   var GAMES = [
+    { id:'note-brain', billing:'monthly', price:3900, url:'',
+      kind:{kr:'계이름 트레이닝 교구', en:'Note-reading training tool'},
+      name:{kr:'계이름 브레인', en:'Note Name Brain'},
+      desc:{kr:'오선 위에 나오는 음표를 보고 계이름을 맞히며 악보 읽는 힘을 기르는 교구예요. 높은음자리표와 낮은음자리표 계이름을 단계별로 익힐 수 있어요.',
+            en:'A tool where children read notes on the staff and name them, building sight-reading step by step in treble and bass clef.'},
+      tags:{kr:['6세 ~ 초등', '계이름', '악보 읽기'], en:['Age 6 to elementary', 'Note names', 'Sight-reading']} }
   ];
 
   // 실제 워크지/악보 파일이 Storage에 업로드되기 전까지는 비워둡니다.
@@ -212,11 +220,11 @@ window.ClazzApp = (function(){
 
   var TIERS = [
     { id:'basic', name:{kr:'베이직', en:'Basic'}, price:9900, games:1, worksheets:5,
-      desc:{kr:'게임 1개 이용권 + 워크지 5개 다운로드', en:'1 game pass + 5 worksheet downloads'} },
+      desc:{kr:'뮤직랩 교구 1개 + 워크지 5개 다운로드', en:'1 Music Lab tool + 5 worksheet downloads'} },
     { id:'standard', name:{kr:'스탠다드', en:'Standard'}, price:15900, games:2, worksheets:10,
-      desc:{kr:'게임 2개 이용권 + 워크지 10개 다운로드', en:'2 game passes + 10 worksheet downloads'}, featured:true },
+      desc:{kr:'뮤직랩 교구 2개 + 워크지 10개 다운로드', en:'2 Music Lab tools + 10 worksheet downloads'}, featured:true },
     { id:'premium', name:{kr:'프리미엄', en:'Premium'}, price:19900, games:3, worksheets:10,
-      desc:{kr:'게임 3개 이용권 + 워크지 10개 다운로드', en:'3 game passes + 10 worksheet downloads'} }
+      desc:{kr:'뮤직랩 교구 3개 + 워크지 10개 다운로드', en:'3 Music Lab tools + 10 worksheet downloads'} }
   ];
 
   // 악보+MR 예시: { id:'고유id', category:'classical'|'fourhands'|'ost'|'performance'|'event', price:3000,
@@ -426,8 +434,17 @@ window.ClazzApp = (function(){
     });
   }
 
+  // 뮤직랩 정기결제 상품은 서버가 기록한 labSubscriptions[id].accessUntil(이용 가능 기한)으로 판단해요.
+  // 해지해도 이미 결제한 기간이 끝날 때까지는 계속 이용할 수 있어요.
+  function labSubscription(gameId){
+    var subs = getEnt().labSubscriptions || {};
+    return subs[gameId] || null;
+  }
   function hasGameAccess(gameId){
-    return isLoggedIn() && getEnt().ownedGameIds.indexOf(gameId) > -1;
+    if(!isLoggedIn()) return false;
+    var sub = labSubscription(gameId);
+    if(sub) return new Date(sub.accessUntil) > new Date();
+    return (getEnt().ownedGameIds || []).indexOf(gameId) > -1;
   }
   // 유료 워크지는 "상품id-언어" 조합으로 구매 여부를 구분해서, 한/영 버전이 각각 따로 결제돼요.
   function worksheetLangId(sheet){ return sheet.id + '-' + getLang(); }
@@ -520,8 +537,9 @@ window.ClazzApp = (function(){
   // Resolves a stored (language-independent) history/subscription entry into
   // display text in the currently active language.
   var HISTORY_KIND_LABEL = {
-    'game': {kr:'게임 단품 구매', en:'Game purchase'},
-    'game-slot': {kr:'구독 게임 슬롯 사용', en:'Subscription game slot'},
+    'game': {kr:'뮤직랩 이용권 구매', en:'Music Lab purchase'},
+    'game-slot': {kr:'구독 플랜으로 뮤직랩 이용', en:'Music Lab via plan'},
+    'lab-subscription': {kr:'뮤직랩 정기결제', en:'Music Lab monthly billing'},
     'worksheet': {kr:'워크지 단품 구매', en:'Worksheet purchase'},
     'worksheet-credit': {kr:'구독 크레딧으로 다운로드', en:'Downloaded with subscription credit'},
     'sheetmusic': {kr:'악보+MR 구매', en:'Sheet music + MR purchase'},
@@ -530,7 +548,7 @@ window.ClazzApp = (function(){
   function historyItemLabel(item){
     var kindLabel = t(HISTORY_KIND_LABEL[item.kind]) || item.kind;
     var refLabel = item.refId;
-    if(item.kind === 'game' || item.kind === 'game-slot'){
+    if(item.kind === 'game' || item.kind === 'game-slot' || item.kind === 'lab-subscription'){
       var g = findGame(item.refId); if(g) refLabel = t(g.name);
     }else if(item.kind === 'worksheet' || item.kind === 'worksheet-credit'){
       var langSuffix = item.refId.match(/-(kr|en)$/);
@@ -565,91 +583,165 @@ window.ClazzApp = (function(){
      ========================================================= */
   var IMP_STORE_CODE = 'imp47257084';
 
+  // ⚠️ 포트원 채널 설정
+  // - PG_ONETIME : 단건 결제(워크지·악보+MR)용 KG이니시스 채널
+  // - PG_BILLING : 정기결제(빌링키 발급)용 KG이니시스 채널
+  //   정기결제는 일반결제와 "다른 MID"를 써야 해요. 테스트 MID는 INIBillTst 이고,
+  //   포트원 관리자 콘솔 > 결제 연동 > 채널 관리에서 "KG이니시스 · 정기결제" 채널을 추가해야 결제창이 열려요.
+  //   카드사 심사가 통과되면 실제 발급받은 정기결제 MID로 바꿔주세요.
+  var PG_ONETIME = 'html5_inicis.INIpayTest';
+  var PG_BILLING = 'html5_inicis.INIBillTst';
+
+  var PAY_TEXT = {
+    methodTitle:{kr:'결제 수단 선택', en:'Choose a payment method'},
+    subTitle:{kr:'정기결제 등록', en:'Set up monthly billing'},
+    monthly:{kr:'매월 결제 금액', en:'Monthly amount'},
+    total:{kr:'결제 금액', en:'Total'},
+    payNow:{kr:'결제 진행', en:'Proceed to pay'},
+    subscribeNow:{kr:'정기결제 시작하기', en:'Start monthly billing'},
+    consent:{kr:'매월 같은 날 자동으로 결제되는 것에 동의해요. 해지는 마이페이지에서 언제든 할 수 있고, 해지하면 다음 결제일부터 청구되지 않아요.',
+             en:'I agree to be charged automatically on the same day every month. I can cancel anytime from My Page, and billing stops from the next billing date.'},
+    consentNeeded:{kr:'정기결제 동의에 체크해주세요.', en:'Please agree to monthly billing first.'},
+    terms:{kr:'환불 규정 보기', en:'See refund policy'}
+  };
+
+  // 결제 모달 안에 "정기결제 동의" 영역을 한 번만 만들어 넣어요 (모든 페이지 공통).
+  function ensureConsentBox(){
+    if(document.getElementById('payConsentWrap')) return;
+    var summary = document.querySelector('#payStepMethod .pay-summary');
+    if(!summary) return;
+    var wrap = document.createElement('label');
+    wrap.id = 'payConsentWrap';
+    wrap.className = 'pay-consent';
+    wrap.innerHTML = '<input type="checkbox" id="payConsent"><span id="payConsentText"></span>';
+    summary.parentNode.insertBefore(wrap, summary.nextSibling);
+    var link = document.createElement('a');
+    link.id = 'payTermsLink';
+    link.className = 'pay-terms-link';
+    link.href = 'terms.html#refund';
+    link.target = '_blank';
+    wrap.parentNode.insertBefore(link, wrap.nextSibling);
+  }
+
+  // product: { name:{kr,en}, price, type:'game'|'worksheet'|'sheetmusic'|'tier', id, recurring:boolean }
   function openPaymentFlow(product, onSuccess){
+    var lang = getLang();
+    var recurring = !!product.recurring;
+    ensureConsentBox();
+
     var titleEl = $('#payTitleText');
     var subEl = $('#paySubText');
     var amountEl = $('#payAmountText');
-    var lang = getLang();
-    if(titleEl) titleEl.textContent = lang === 'en' ? 'Choose a payment method' : '결제 수단 선택';
-    if(subEl) subEl.textContent = t(product.name);
-    if(amountEl) amountEl.textContent = money(product.price);
+    var summaryLabel = document.querySelector('#payStepMethod .pay-summary span');
+    var confirmBtn = $('#confirmPayBtn');
+    var consentWrap = $('#payConsentWrap');
+    var consentBox = $('#payConsent');
+    var termsLink = $('#payTermsLink');
+
+    if(titleEl) titleEl.textContent = t(recurring ? PAY_TEXT.subTitle : PAY_TEXT.methodTitle);
+    if(subEl) subEl.textContent = t(product.name) + (recurring ? (lang === 'en' ? ' · monthly' : ' · 매월 자동결제') : '');
+    if(amountEl) amountEl.textContent = money(product.price) + (recurring ? (lang === 'en' ? ' / mo' : ' / 월') : '');
+    if(summaryLabel) summaryLabel.textContent = t(recurring ? PAY_TEXT.monthly : PAY_TEXT.total);
+    if(confirmBtn) confirmBtn.textContent = t(recurring ? PAY_TEXT.subscribeNow : PAY_TEXT.payNow);
+    if(consentWrap){
+      consentWrap.style.display = recurring ? 'flex' : 'none';
+      $('#payConsentText').textContent = t(PAY_TEXT.consent);
+      consentBox.checked = false;
+    }
+    if(termsLink){
+      termsLink.style.display = recurring ? 'inline-block' : 'none';
+      termsLink.textContent = t(PAY_TEXT.terms);
+    }
 
     $('#payStepMethod') && $('#payStepMethod').classList.add('active');
     $('#payStepProcessing') && $('#payStepProcessing').classList.remove('active');
     openModal('paymentModal');
 
-    $all('.pay-method').forEach(function(label){
-      label.onclick = function(){
-        $all('.pay-method').forEach(function(l){ l.classList.remove('selected'); });
-        label.classList.add('selected');
+    function backToMethod(msg){
+      $('#payStepProcessing').classList.remove('active');
+      $('#payStepMethod').classList.add('active');
+      if(msg) showToast(msg);
+    }
+
+    if(!confirmBtn) return;
+    confirmBtn.onclick = function(){
+      if(recurring && consentBox && !consentBox.checked){
+        showToast(t(PAY_TEXT.consentNeeded));
+        return;
+      }
+      if(typeof IMP === 'undefined'){
+        showToast(lang === 'en' ? 'Payment module failed to load. Please refresh and try again.' : '결제 모듈을 불러오지 못했어요. 새로고침 후 다시 시도해주세요.');
+        return;
+      }
+      var user = currentUser();
+      if(!user){ requireLogin(window.location.href); return; }
+
+      $('#payStepMethod').classList.remove('active');
+      $('#payStepProcessing').classList.add('active');
+
+      var merchantUid = 'clazzpiano_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+      var req = {
+        pg: recurring ? PG_BILLING : PG_ONETIME,
+        pay_method: 'card',
+        merchant_uid: merchantUid,
+        name: t(product.name) + (recurring ? (lang === 'en' ? ' (monthly)' : ' (월 정기결제)') : ''),
+        amount: product.price,
+        buyer_email: user.email || '',
+        buyer_name: user.name || '',
+        // KG이니시스는 구매자 연락처가 없으면 결제창이 열리지 않아요.
+        buyer_tel: user.phone || '010-0000-0000'
       };
-    });
+      if(recurring){
+        // 카드 정보는 PG사가 보관하고, 우리는 이 고객 식별값(customer_uid)으로만 매달 청구를 요청해요.
+        req.customer_uid = 'clazz_' + user.uid + '_' + product.type + '_' + product.id;
+      }
 
-    var confirmBtn = $('#confirmPayBtn');
-    if(confirmBtn){
-      confirmBtn.onclick = function(){
-        $('#payStepMethod').classList.remove('active');
-        $('#payStepProcessing').classList.add('active');
-
-        var selectedMethod = document.querySelector('input[name="payMethod"]:checked');
-        // ⚠️ 지금은 "테스트" 채널(KG이니시스, MID: INIpayTest) 하나만 만들어져 있어서
-        // 이 코드를 그대로 씁니다. 나중에 KCP/KG이니시스 실연동(카드사 심사 통과) 채널이
-        // 생기면, 그때 실제 채널에 맞는 pg 값으로 바꿔드릴게요.
-        var pgCode = 'html5_inicis.INIpayTest';
-        // ⚠️ pgCode: 포트원 콘솔의 "채널 관리"에 등록된 실제 채널 식별자와 다를 수 있어요.
-        // 결제창이 안 뜨거나 오류가 나면, 포트원 관리자 콘솔 > 채널 관리에서 정확한 값을 확인해서 알려주세요.
-
-        var merchantUid = 'clazzpiano_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
-        var user = currentUser();
-
-        if(typeof IMP === 'undefined'){
-          $('#payStepProcessing').classList.remove('active');
-          $('#payStepMethod').classList.add('active');
-          showToast(lang === 'en' ? 'Payment module failed to load. Please refresh and try again.' : '결제 모듈을 불러오지 못했어요. 새로고침 후 다시 시도해주세요.');
+      IMP.init(IMP_STORE_CODE);
+      IMP.request_pay(req, function(rsp){
+        if(!rsp.success){
+          backToMethod(rsp.error_msg || (lang === 'en' ? 'Payment was cancelled.' : '결제가 취소됐어요.'));
           return;
         }
 
-        IMP.init(IMP_STORE_CODE);
-        IMP.request_pay({
-          pg: pgCode,
-          pay_method: 'card',
-          merchant_uid: merchantUid,
-          name: t(product.name),
-          amount: product.price,
-          buyer_email: user ? user.email : '',
-          buyer_name: user ? user.name : ''
-        }, function(rsp){
-          if(!rsp.success){
-            $('#payStepProcessing').classList.remove('active');
-            $('#payStepMethod').classList.add('active');
-            showToast(rsp.error_msg || (lang === 'en' ? 'Payment was cancelled.' : '결제가 취소됐어요.'));
-            return;
-          }
+        // 브라우저가 "성공했다"고 말하는 걸 그대로 믿지 않고, 서버(Cloud Functions)가
+        // 포트원에 직접 확인한 뒤에만 구매/구독을 확정합니다.
+        var call = recurring
+          ? fbFunctions.httpsCallable('startSubscription')({
+              customerUid: req.customer_uid,
+              expectedAmount: product.price,
+              productType: product.type,
+              productId: product.id
+            })
+          : fbFunctions.httpsCallable('verifyPayment')({
+              impUid: rsp.imp_uid,
+              expectedAmount: product.price,
+              productType: product.type,
+              productId: product.id
+            });
 
-          // 브라우저가 "성공했다"고 말하는 걸 그대로 믿지 않고, 서버(Cloud Functions)가
-          // 포트원에 직접 물어봐서 실제 결제/금액을 확인한 뒤에만 구매를 확정합니다.
-          var verifyPayment = fbFunctions.httpsCallable('verifyPayment');
-          verifyPayment({
-            impUid: rsp.imp_uid,
-            expectedAmount: product.price,
-            productType: product.type,
-            productId: product.id
-          }).then(function(){
-            return refreshEntitlements();
-          }).then(function(){
-            closeModal('paymentModal');
-            showToast(lang === 'en' ? 'Payment complete.' : '결제가 완료됐어요.');
-            onSuccess();
-          }).catch(function(err){
-            console.error('클래쯔피아노: 결제 검증 실패', err);
-            closeModal('paymentModal');
-            showToast(lang === 'en'
-              ? 'Payment could not be verified. Please contact support.'
-              : '결제 확인에 실패했어요. 카드사에서 실제로 결제가 됐다면 문의(mihyun555@gmail.com)로 연락해주세요.');
-          });
+        call.then(function(){
+          return refreshEntitlements();
+        }).then(function(){
+          closeModal('paymentModal');
+          showToast(recurring
+            ? (lang === 'en' ? 'Monthly billing started.' : '정기결제가 시작됐어요.')
+            : (lang === 'en' ? 'Payment complete.' : '결제가 완료됐어요.'));
+          onSuccess();
+        }).catch(function(err){
+          console.error('클래쯔피아노: 결제 확인 실패', err);
+          closeModal('paymentModal');
+          showToast(lang === 'en'
+            ? 'Payment could not be verified. Please contact support.'
+            : '결제 확인에 실패했어요. 카드사에서 실제로 결제가 됐다면 문의(mihyun555@gmail.com)로 연락해주세요.');
         });
-      };
-    }
+      });
+    };
+  }
+
+  // 정기결제 해지: 서버가 포트원의 다음 회차 예약을 취소하고, 이미 결제한 기간까지는 계속 이용하게 해요.
+  function cancelSubscription(productType, productId){
+    return fbFunctions.httpsCallable('cancelSubscription')({ productType: productType, productId: productId })
+      .then(function(){ return refreshEntitlements(); });
   }
 
   /* ---------- Game player (placeholder stage) ---------- */
@@ -659,14 +751,18 @@ window.ClazzApp = (function(){
     if(titleEl) titleEl.textContent = t(product.name);
     var stage = $('#playerStage');
     if(stage){
-      stage.innerHTML = '<div class="spinner"></div><p>' + (lang === 'en' ? 'Loading the game.' : '게임을 불러오는 중입니다.') + '</p>';
+      stage.innerHTML = '<div class="spinner"></div><p>' + (lang === 'en' ? 'Loading.' : '교구를 불러오는 중이에요.') + '</p>';
     }
     openModal('gamePlayerModal');
+    if(product.url && stage){
+      stage.innerHTML = '<iframe src="' + product.url + '" title="' + t(product.name) + '" style="width:100%;height:100%;border:0;" allow="autoplay; fullscreen"></iframe>';
+      return;
+    }
     setTimeout(function(){
       if(!stage) return;
       stage.innerHTML = lang === 'en'
-        ? '<p style="font-family:\'Noto Serif KR\',serif;font-size:1.1rem;color:#F3EFE6;">You\'re in — no password needed.</p><p>This is a placeholder stage for the real game player, shown automatically once payment and login are confirmed.</p>'
-        : '<p style="font-family:\'Noto Serif KR\',serif;font-size:1.1rem;color:#F3EFE6;">비밀번호 입력 없이 바로 입장했어요.</p><p>이 자리는 실제 게임 플레이어가 들어갈 자리예요. 결제·로그인 확인 후 이 화면으로 자동 전환됩니다.</p>';
+        ? '<p style="font-family:\'Noto Serif KR\',serif;font-size:1.1rem;color:#F3EFE6;">Almost ready.</p><p>This tool is being connected. Please check back soon.</p>'
+        : '<p style="font-family:\'Noto Serif KR\',serif;font-size:1.1rem;color:#F3EFE6;">곧 만나요.</p><p>교구를 연결하고 있어요. 조금만 기다려 주세요.</p>';
     }, 1100);
   }
 
@@ -782,7 +878,7 @@ window.ClazzApp = (function(){
     requireLogin:requireLogin, paintAuthNav:paintAuthNavLabel,
 
     getEnt:getEnt, onReady:onReady,
-    hasGameAccess:hasGameAccess, hasWorksheetAccess:hasWorksheetAccess, hasSheetMusicAccess:hasSheetMusicAccess,
+    hasGameAccess:hasGameAccess, labSubscription:labSubscription, cancelSubscription:cancelSubscription, hasWorksheetAccess:hasWorksheetAccess, hasSheetMusicAccess:hasSheetMusicAccess,
     grantGamePurchase:grantGamePurchase, useGameSlot:useGameSlot,
     grantWorksheetPurchase:grantWorksheetPurchase, useWorksheetCredit:useWorksheetCredit,
     grantSheetMusicPurchase:grantSheetMusicPurchase,

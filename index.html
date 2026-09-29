@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>클래쯔피아노 Clazz Piano</title>
-<meta name="description" content="음악학원을 더욱 꽉 채워주는, 클래쯔피아노 — 워크지와 피아노 리듬 게임">
+<meta name="description" content="음악학원을 더욱 꽉 채워주는, 클래쯔피아노 — 워크지, 악보+MR, 디지털 교구 클래쯔 뮤직랩">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@500;600;700&display=swap" rel="stylesheet">
@@ -26,7 +26,7 @@
       <nav class="main-nav" id="mainNav">
         <a class="nav-link" href="worksheets.html" data-i18n="navWorksheets">워크지</a>
         <a class="nav-link" href="sheetmusic.html" data-i18n="navSheetMusic">악보+MR</a>
-        <a class="nav-link" href="games.html" data-i18n="navGames">유료 게임</a>
+        <a class="nav-link" href="musiclab.html" data-i18n="navGames">클래쯔 뮤직랩</a>
         <a class="nav-link" href="account.html" id="myPageLink" data-i18n="navMyPage">마이페이지</a>
       </nav>
       <div class="lang-toggle" role="group" aria-label="language toggle">
@@ -48,7 +48,7 @@
         <p class="hero-sub" data-i18n="heroSub">여섯 살 아이의 첫 박자부터 초등학생의 자유로운 연주까지.<br>클래쯔피아노는 음악학원 수업이 다채롭고 즐거울 수 있도록<br>다양한 수업자료를 만듭니다.</p>
         <div class="hero-actions">
           <a class="btn btn-solid" href="#worksheets" data-i18n="heroBtn1">워크지 받기</a>
-          <a class="btn btn-outline" href="#games" data-i18n="heroBtn2">게임 살펴보기</a>
+          <a class="btn btn-outline" href="#musiclab" data-i18n="heroBtn2">뮤직랩 살펴보기</a>
         </div>
       </div>
       <div class="hero-art">
@@ -165,13 +165,13 @@
     </div>
   </section>
 
-  <!-- Premium games preview -->
-  <section id="games" class="section-alt">
+  <!-- Clazz Music Lab preview -->
+  <section id="musiclab" class="section-alt">
     <div class="wrap">
       <div class="section-head">
-        <p class="kicker" data-i18n="gameKicker">practice, on their own</p>
-        <h2 data-i18n="gameTitle">유료 웹 게임</h2>
-        <p data-i18n="gameSub">학원 수업 사이, 아이들이 스스로 박자를 익히는 시간을 만들어요.</p>
+        <p class="kicker" data-i18n="gameKicker">clazz music lab</p>
+        <h2 data-i18n="gameTitle">클래쯔 뮤직랩</h2>
+        <p data-i18n="gameSub">음악을 직접 느끼며 배우는 디지털 교구</p>
       </div>
 
       <div id="gameCardWrap">
@@ -194,24 +194,24 @@
           </svg>
         </div>
         <div class="game-body">
-          <p class="kicker" id="featuredGameKicker">rhythm game</p>
-          <h3 id="featuredGameTitle">두근두근 박자놀이</h3>
-          <p id="featuredGameDesc">화면 위로 흐르는 음표를 보며 손으로 직접 박자를 치는 타악기 리듬 게임. BPM과 박자표, 난이도를 골라 우리 반 아이 수준에 맞게 연습할 수 있어요.</p>
+          <p class="kicker" id="featuredGameKicker">계이름 트레이닝 교구</p>
+          <h3 id="featuredGameTitle">계이름 브레인</h3>
+          <p id="featuredGameDesc">오선 위에 나오는 음표를 보고 계이름을 맞히며 악보 읽는 힘을 기르는 교구예요. 높은음자리표와 낮은음자리표 계이름을 단계별로 익힐 수 있어요.</p>
           <div class="game-tags" id="featuredGameTags">
             <span>6세 ~ 초등</span>
-            <span>BPM 5단계</span>
-            <span>난이도 5단계</span>
+            <span>계이름</span>
+            <span>악보 읽기</span>
           </div>
           <div class="game-meta">
-            <p class="game-price" id="featuredGamePrice">5,900원<span> · 1개월 이용권</span></p>
+            <p class="game-price" id="featuredGamePrice">3,900원<span> / 월 · 매월 자동결제</span></p>
           </div>
-          <button class="btn btn-gold" id="startPaymentBtn">결제하고 바로 시작하기</button>
+          <button class="btn btn-gold" id="startPaymentBtn">구독하고 시작하기</button>
         </div>
       </div>
       </div>
 
       <div class="section-more">
-        <a class="btn btn-outline" href="games.html" data-i18n="gameMoreBtn">게임 더보기</a>
+        <a class="btn btn-outline" href="musiclab.html" data-i18n="gameMoreBtn">뮤직랩 더보기</a>
       </div>
     </div>
   </section>
@@ -250,7 +250,6 @@
     </div>
     <div class="footer-bottom">
       <span>&copy; 2026 Clazz Piano. All rights reserved.</span>
-      <span data-i18n="footerNote">본 사이트는 데모 버전이며 일부 기능은 준비 중입니다.</span>
     </div>
   </div>
 </footer>
@@ -261,20 +260,16 @@
     <button class="modal-close" data-close="paymentModal" aria-label="닫기">&times;</button>
     <div class="pay-step active" id="payStepMethod">
       <h3 id="paymentTitle"><span id="payTitleText">결제 수단 선택</span></h3>
-      <p class="modal-sub"><span id="paySubText">두근두근 박자놀이 · 1개월 이용권</span></p>
+      <p class="modal-sub"><span id="paySubText">계이름 브레인 · 매월 자동결제</span></p>
       <div class="pay-methods">
         <label class="pay-method selected">
           <input type="radio" name="payMethod" value="toss" checked>
           <span data-i18n="payToss">토스페이먼츠로 결제</span>
         </label>
-        <label class="pay-method">
-          <input type="radio" name="payMethod" value="portone">
-          <span data-i18n="payPortone">포트원 카드 결제</span>
-        </label>
       </div>
       <div class="pay-summary">
         <span data-i18n="paySummaryLabel">결제 금액</span>
-        <strong id="payAmountText">5,900원</strong>
+        <strong id="payAmountText">3,900원 / 월</strong>
       </div>
       <button class="btn btn-gold" style="width:100%" id="confirmPayBtn" data-i18n="payConfirm">결제 진행</button>
     </div>
@@ -289,12 +284,12 @@
 <div class="modal-overlay" id="gamePlayerModal" role="dialog" aria-modal="true" aria-labelledby="playerTitle">
   <div class="modal-box">
     <div class="player-topbar">
-      <span class="serif" id="playerTitle">두근두근 박자놀이</span>
+      <span class="serif" id="playerTitle">계이름 브레인</span>
       <button class="modal-close" data-close="gamePlayerModal" aria-label="닫기">&times;</button>
     </div>
     <div class="player-stage" id="playerStage">
       <div class="spinner"></div>
-      <p>게임을 불러오는 중입니다.</p>
+      <p>교구를 불러오는 중이에요.</p>
     </div>
   </div>
 </div>
@@ -305,6 +300,14 @@
     <button class="modal-close" data-close="patchNotesModal" aria-label="닫기">&times;</button>
     <h3 id="patchTitle" data-i18n="patchTitle">패치노트</h3>
     <p class="modal-sub" data-i18n="patchSub">클래쯔피아노가 업데이트된 내역이에요.</p>
+    <div class="patch-item">
+      <span class="patch-ver">v1.4.0</span><span class="patch-date">2026.09.29</span>
+      <ul>
+        <li>디지털 교구 공간 '클래쯔 뮤직랩' 오픈</li>
+        <li>계이름 브레인 월 3,900원 정기결제 이용 시작</li>
+        <li>마이페이지에서 정기결제 해지 기능 추가</li>
+      </ul>
+    </div>
     <div class="patch-item">
       <span class="patch-ver">v1.3.0</span><span class="patch-date">2026.09.09</span>
       <ul>
@@ -536,7 +539,7 @@
   }
 
   /* ---------- Featured game card (로그인/구매 상태 + 언어에 따라 렌더링) ---------- */
-  var FEATURED_GAME = ClazzApp.findGame('ddgd-rhythm');
+  var FEATURED_GAME = ClazzApp.findGame('note-brain');
   var gameCardWrap = $('#gameCardWrap');
   var payBtn = $('#startPaymentBtn');
 
@@ -545,11 +548,12 @@
       gameCardWrap.innerHTML = ClazzApp.comingSoonHTML();
       return;
     }
+    $('#featuredGameKicker').textContent = ClazzApp.t(FEATURED_GAME.kind);
     $('#featuredGameTitle').textContent = ClazzApp.t(FEATURED_GAME.name);
     $('#featuredGameDesc').textContent = ClazzApp.t(FEATURED_GAME.desc);
     var tagsWrap = $('#featuredGameTags');
     tagsWrap.innerHTML = ClazzApp.t(FEATURED_GAME.tags).map(function(tag){ return '<span>' + tag + '</span>'; }).join('');
-    var unit = ClazzApp.getLang() === 'en' ? ' · 1-month pass' : ' · 1개월 이용권';
+    var unit = ClazzApp.getLang() === 'en' ? ' / mo · auto-renews monthly' : ' / 월 · 매월 자동결제';
     $('#featuredGamePrice').innerHTML = ClazzApp.money(FEATURED_GAME.price) + '<span>' + unit + '</span>';
     refreshGameButton();
   }
@@ -558,17 +562,17 @@
     if(!FEATURED_GAME) return;
     var lang = ClazzApp.getLang();
     if(!ClazzApp.isLoggedIn()){
-      payBtn.textContent = lang === 'en' ? 'Log in to check' : '로그인하고 확인하기';
+      payBtn.textContent = lang === 'en' ? 'Log in to subscribe' : '로그인하고 구독하기';
       payBtn.onclick = function(){ ClazzApp.requireLogin(window.location.href); };
     }else if(ClazzApp.hasGameAccess(FEATURED_GAME.id)){
-      payBtn.textContent = lang === 'en' ? 'Start the game' : '게임 시작하기';
+      payBtn.textContent = lang === 'en' ? 'Open' : '시작하기';
       payBtn.onclick = function(){ ClazzApp.launchGame(FEATURED_GAME); };
     }else{
-      payBtn.textContent = lang === 'en' ? 'Pay and start now' : '결제하고 바로 시작하기';
+      payBtn.textContent = lang === 'en' ? 'Subscribe and start' : '구독하고 시작하기';
       payBtn.onclick = function(){
-        var chargeProduct = { name: FEATURED_GAME.name, price: FEATURED_GAME.price, type: 'game', id: FEATURED_GAME.id };
+        var chargeProduct = { name: FEATURED_GAME.name, price: FEATURED_GAME.price, type: 'lab', id: FEATURED_GAME.id, recurring: FEATURED_GAME.billing === 'monthly' };
         ClazzApp.openPaymentFlow(chargeProduct, function(){
-          // 구매 확정은 서버(Cloud Functions)가 결제를 검증한 뒤 이미 처리했어요.
+          // 정기결제 확정은 서버(Cloud Functions)가 포트원에 확인한 뒤 이미 처리했어요.
           refreshGameButton();
           ClazzApp.launchGame(FEATURED_GAME);
         });
@@ -583,7 +587,7 @@
     heroLine1:{kr:'음악학원을 더욱 꽉 채워주는,', en:'Filling your piano studio even fuller,'},
     heroLine2:{kr:'클래쯔피아노', en:'Clazz Piano'},
     heroBtn1:{kr:'워크지 받기', en:'Get worksheets'},
-    heroBtn2:{kr:'게임 살펴보기', en:'See the games'},
+    heroBtn2:{kr:'뮤직랩 살펴보기', en:'Explore Music Lab'},
     wsKicker:{kr:'for the classroom', en:'for the classroom'},
     wsTitle:{kr:'워크지', en:'Worksheets'},
     wsSub:{kr:'학원 수업에 바로 쓸 수 있도록 매달 새로 그리는 워크지예요. 종류를 골라 다운로드해서 바로 인쇄하실 수 있어요.', en:'New worksheets drawn every month. Pick a category and print them straight away.'},
@@ -596,10 +600,10 @@
     smSub:{kr:'클래쯔피아노 오리지널 소곡의 악보 PDF와 반주 MR 음원을 함께 다운로드할 수 있어요.',
            en:'Download sheet music PDFs and MR backing tracks for Clazz Piano original pieces, bundled together.'},
     smMoreBtn:{kr:'악보+MR 더보기', en:'More sheet music'},
-    gameKicker:{kr:'practice, on their own', en:'practice, on their own'},
-    gameTitle:{kr:'유료 웹 게임', en:'Premium Web Games'},
-    gameSub:{kr:'학원 수업 사이, 아이들이 스스로 박자를 익히는 시간을 만들어요.', en:'A moment between lessons where children learn rhythm on their own.'},
-    gameMoreBtn:{kr:'게임 더보기', en:'More games'}
+    gameKicker:{kr:'clazz music lab', en:'clazz music lab'},
+    gameTitle:{kr:'클래쯔 뮤직랩', en:'Clazz Music Lab'},
+    gameSub:{kr:'음악을 직접 느끼며 배우는 디지털 교구', en:'Digital learning tools for feeling music firsthand'},
+    gameMoreBtn:{kr:'뮤직랩 더보기', en:'More in Music Lab'}
   });
   // footerDesc contains <br> line breaks, so it must be applied as HTML
   var footerDescEl = document.querySelector('[data-i18n="footerDesc"]');

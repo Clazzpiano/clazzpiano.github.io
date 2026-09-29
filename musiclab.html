@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>클래쯔 뮤직랩 · 클래쯔피아노</title>
+<meta name="description" content="클래쯔 뮤직랩 — 음악을 직접 느끼며 배우는 디지털 교구">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <div class="header-row">
+    <a href="index.html" class="brand">
+      <img class="brand-logo" src="logo.png" alt="클래쯔피아노 Clazz Piano">
+      <span class="brand-kr" data-i18n="brandKr">클래쯔피아노</span>
+    </a>
+    <div class="header-right">
+      <button class="menu-toggle" id="menuToggle" aria-label="메뉴 열기" aria-expanded="false"><span></span><span></span><span></span></button>
+      <nav class="main-nav" id="mainNav">
+        <a class="nav-link" href="worksheets.html" data-i18n="navWorksheets">워크지</a>
+        <a class="nav-link" href="sheetmusic.html" data-i18n="navSheetMusic">악보+MR</a>
+        <a class="nav-link" href="musiclab.html" data-i18n="navGames">클래쯔 뮤직랩</a>
+        <a class="nav-link" href="account.html" id="myPageLink">마이페이지</a>
+      </nav>
+      <div class="lang-toggle" role="group" aria-label="language toggle">
+        <button type="button" class="active" data-lang="kr" id="langKr">KR</button>
+        <button type="button" data-lang="en" id="langEn">EN</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap page-head">
+    <a class="back-link" href="index.html" data-i18n="backHome">← 홈으로</a>
+    <h1 data-i18n="pageTitle">클래쯔 뮤직랩</h1>
+    <p class="lab-tagline" data-i18n="labTagline">음악을 직접 느끼며 배우는 디지털 교구</p>
+    <p data-i18n="pageSub">학원 수업 사이, 아이들이 음악을 직접 보고 듣고 눌러보며 익히는 교구예요. 월 구독으로 이용하고, 원할 때 언제든 해지할 수 있어요.</p>
+  </div>
+
+  <section>
+    <div class="wrap">
+      <div class="game-grid" id="gameGrid"></div>
+
+      <div class="account-card lab-notice" id="billingNotice">
+        <h3 data-i18n="noticeTitle">정기결제 안내</h3>
+        <dl>
+          <dt data-i18n="nProvideT">제공 내용</dt>
+          <dd data-i18n="nProvideD">구독 기간 동안 선택한 뮤직랩 교구를 PC·태블릿·휴대폰에서 횟수 제한 없이 이용할 수 있어요.</dd>
+          <dt data-i18n="nCycleT">결제 주기</dt>
+          <dd data-i18n="nCycleD">첫 결제일을 기준으로 매월 같은 날 자동으로 결제돼요. 해당 날짜가 없는 달은 그 달의 마지막 날에 결제돼요.</dd>
+          <dt data-i18n="nCancelT">해지 방법</dt>
+          <dd data-i18n="nCancelD">마이페이지의 '이용 중인 뮤직랩'에서 언제든 해지할 수 있어요. 해지하면 다음 결제일부터 청구되지 않고, 이미 결제한 기간이 끝날 때까지는 계속 이용할 수 있어요.</dd>
+          <dt data-i18n="nRefundT">환불</dt>
+          <dd data-i18n="nRefundD" data-i18n-html>결제 후 7일 이내에 한 번도 이용하지 않았다면 전액 환불해 드려요. 자세한 내용은 <a href="terms.html#refund">이용약관 제7조</a>를 확인해주세요.</dd>
+          <dt data-i18n="nContactT">문의</dt>
+          <dd data-i18n="nContactD">010-5929-6243 · mihyun555@gmail.com</dd>
+        </dl>
+      </div>
+
+      <div class="account-card" style="margin-top:24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+        <div>
+          <h3 style="margin-bottom:6px;" data-i18n="bannerTitle">워크지도 함께 쓰신다면 구독 플랜이 더 알뜰해요</h3>
+          <p style="color:var(--ink-soft); font-size:0.9rem;" data-i18n="bannerSub">뮤직랩 교구와 워크지 다운로드를 함께 이용하는 플랜을 확인해보세요.</p>
+        </div>
+        <a class="btn btn-gold" href="pricing.html" data-i18n="bannerBtn">구독 플랜 보기</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand"><h4 data-i18n="brandKr">클래쯔피아노</h4><p data-i18n="footerDesc" data-i18n-html>음악학원을 위한 수업자료를 만듭니다.<br><br>배움안에 즐거움과 행복이 함께하는 그 지점을 만들어가고 있어요.</p></div>
+      <div class="footer-col"><h4 data-i18n="footerInfoTitle">사업자 정보</h4><ul class="footer-links"><li data-i18n="footerInfoName">상호 : 클래쯔피아노</li><li data-i18n="footerInfoCeo">대표 : 최미현</li><li data-i18n="footerInfoBizNum">사업자등록번호 : 384-91-01851</li><li data-i18n="footerInfoMailOrder">통신판매업신고번호 : 2026-고양덕양구-2341호</li><li data-i18n="footerInfoAddress">주소 : 경기도 덕양구 화신로 234, 백양빌딩 301호</li><li data-i18n="footerInfoPhone">전화 : 010-5929-6243</li><li data-i18n="footerInfoContact">문의 : mihyun555@gmail.com</li></ul></div>
+      <div class="footer-col"><h4 data-i18n="footerMoreTitle">더보기</h4><ul class="footer-links"><li><a href="pricing.html" data-i18n="footerPricing">구독 플랜</a></li><li><a href="terms.html" data-i18n="footerTerms">이용약관</a></li><li><a href="privacy.html" data-i18n="footerPrivacy">개인정보처리방침</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Clazz Piano. All rights reserved.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- Payment modal -->
+<div class="modal-overlay" id="paymentModal" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <button class="modal-close" data-close="paymentModal">&times;</button>
+    <div class="pay-step active" id="payStepMethod">
+      <h3><span id="payTitleText">결제 수단 선택</span></h3>
+      <p class="modal-sub"><span id="paySubText"></span></p>
+      <div class="pay-methods">
+        <label class="pay-method selected"><input type="radio" name="payMethod" value="toss" checked><span data-i18n="payToss">토스페이먼츠로 결제</span></label>
+      </div>
+      <div class="pay-summary"><span data-i18n="paySummaryLabel">결제 금액</span><strong id="payAmountText"></strong></div>
+      <button class="btn btn-gold" style="width:100%" id="confirmPayBtn" data-i18n="payConfirm">결제 진행</button>
+    </div>
+    <div class="pay-step" id="payStepProcessing">
+      <div class="spinner"></div>
+      <p class="pay-processing-text" data-i18n="payProcessing">결제를 진행하고 있어요. 잠시만 기다려 주세요.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Game player modal -->
+<div class="modal-overlay" id="gamePlayerModal" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <div class="player-topbar"><span class="serif" id="playerTitle">클래쯔 뮤직랩</span><button class="modal-close" data-close="gamePlayerModal">&times;</button></div>
+    <div class="player-stage" id="playerStage"><div class="spinner"></div><p>교구를 불러오는 중이에요.</p></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-functions-compat.js"></script>
+<script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+<script src="app.js"></script>
+<script>
+(function(){
+  var $ = ClazzApp.$;
+  ClazzApp.initModalDismiss();
+
+  var menuToggle = $('#menuToggle');
+  var mainNav = $('#mainNav');
+  menuToggle.addEventListener('click', function(){
+    var isOpen = mainNav.classList.toggle('open');
+    menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+
+  var iconPaths = {
+    'note-brain': '<line x1="10" y1="15" x2="120" y2="15" stroke="#C5A059" stroke-width="0.6"/><line x1="10" y1="25" x2="120" y2="25" stroke="#C5A059" stroke-width="0.6"/><line x1="10" y1="35" x2="120" y2="35" stroke="#C5A059" stroke-width="0.6"/><circle cx="45" cy="20" r="6" fill="#D4AF37"/><circle cx="85" cy="30" r="6" fill="#F3EFE6"/>',
+    'ddgd-rhythm': '<circle cx="35" cy="30" r="6" fill="#D4AF37"/><circle cx="65" cy="18" r="6" fill="#F3EFE6"/><circle cx="95" cy="34" r="6" fill="#D4AF37"/><line x1="10" y1="45" x2="120" y2="45" stroke="#C5A059" stroke-width="0.8"/>'
+  };
+
+  function cardForItem(item){
+    var tile = document.createElement('article');
+    tile.className = 'game-tile';
+
+    var lang = ClazzApp.getLang();
+    var loggedIn = ClazzApp.isLoggedIn();
+    var active = loggedIn && ClazzApp.hasGameAccess(item.id);
+    var monthly = item.billing === 'monthly';
+
+    var activeTag = lang === 'en' ? 'Active' : '이용 중';
+    var unit = monthly ? (lang === 'en' ? ' / mo' : ' / 월') : (lang === 'en' ? ' · 1 month' : ' · 1개월');
+    var billingTag = monthly ? '<span class="billing-badge">' + (lang === 'en' ? 'Monthly auto-billing' : '매월 자동결제') + '</span>' : '';
+
+    var priceRow = active
+      ? '<div class="card-price-row"><span class="owned-badge">' + activeTag + '</span></div>'
+      : '<div class="card-price-row"><span class="price-tag">' + ClazzApp.money(item.price) + '<span style="font-size:0.72rem;font-weight:400;color:var(--ink-soft);">' + unit + '</span></span>' + billingTag + '</div>';
+
+    var btnLabel;
+    if(!loggedIn) btnLabel = lang === 'en' ? 'Log in to subscribe' : '로그인하고 구독하기';
+    else if(active) btnLabel = lang === 'en' ? 'Open' : '시작하기';
+    else btnLabel = lang === 'en' ? 'Subscribe and start' : '구독하고 시작하기';
+
+    tile.innerHTML =
+      '<div class="game-tile-icon"><svg viewBox="0 0 130 55" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' + (iconPaths[item.id] || '') + '</svg></div>' +
+      (item.kind ? '<p style="font-size:0.78rem;color:var(--gold-bright);font-weight:600;">' + ClazzApp.t(item.kind) + '</p>' : '') +
+      '<h3>' + ClazzApp.t(item.name) + '</h3>' +
+      '<p>' + ClazzApp.t(item.desc) + '</p>' +
+      '<div class="tags">' + ClazzApp.t(item.tags).map(function(tag){ return '<span>' + tag + '</span>'; }).join('') + '</div>' +
+      priceRow +
+      '<button class="btn btn-gold">' + btnLabel + '</button>';
+
+    tile.querySelector('button').addEventListener('click', function(){
+      if(!loggedIn){ ClazzApp.requireLogin(window.location.href); return; }
+      if(active){ ClazzApp.launchGame(item); return; }
+      var chargeProduct = { name: item.name, price: item.price, type: 'lab', id: item.id, recurring: monthly };
+      ClazzApp.openPaymentFlow(chargeProduct, function(){
+        renderAll();
+        ClazzApp.launchGame(item);
+      });
+    });
+
+    return tile;
+  }
+
+  function renderAll(){
+    var grid = $('#gameGrid');
+    grid.innerHTML = '';
+    if(ClazzApp.GAMES.length === 0){ grid.innerHTML = ClazzApp.comingSoonHTML(); return; }
+    ClazzApp.GAMES.forEach(function(g){ grid.appendChild(cardForItem(g)); });
+  }
+
+  var PAGE_I18N = Object.assign({}, ClazzApp.COMMON_I18N, {
+    pageTitle:{kr:'클래쯔 뮤직랩', en:'Clazz Music Lab'},
+    pageSub:{kr:'학원 수업 사이, 아이들이 음악을 직접 보고 듣고 눌러보며 익히는 교구예요. 월 구독으로 이용하고, 원할 때 언제든 해지할 수 있어요.',
+             en:'Tools that let children see, hear and play their way into music between lessons. Subscribe monthly and cancel anytime.'},
+    noticeTitle:{kr:'정기결제 안내', en:'About monthly billing'},
+    nProvideT:{kr:'제공 내용', en:'What you get'},
+    nProvideD:{kr:'구독 기간 동안 선택한 뮤직랩 교구를 PC·태블릿·휴대폰에서 횟수 제한 없이 이용할 수 있어요.', en:'Unlimited use of the chosen Music Lab tool on PC, tablet and phone during your subscription.'},
+    nCycleT:{kr:'결제 주기', en:'Billing cycle'},
+    nCycleD:{kr:'첫 결제일을 기준으로 매월 같은 날 자동으로 결제돼요. 해당 날짜가 없는 달은 그 달의 마지막 날에 결제돼요.', en:'Charged automatically on the same day each month as your first payment (or the last day of shorter months).'},
+    nCancelT:{kr:'해지 방법', en:'How to cancel'},
+    nCancelD:{kr:"마이페이지의 '이용 중인 뮤직랩'에서 언제든 해지할 수 있어요. 해지하면 다음 결제일부터 청구되지 않고, 이미 결제한 기간이 끝날 때까지는 계속 이용할 수 있어요.", en:"Cancel anytime under 'My Music Lab' on My Page. Billing stops from the next billing date and you keep access until the paid period ends."},
+    nRefundT:{kr:'환불', en:'Refunds'},
+    nRefundD:{kr:'결제 후 7일 이내에 한 번도 이용하지 않았다면 전액 환불해 드려요. 자세한 내용은 <a href="terms.html#refund">이용약관 제7조</a>를 확인해주세요.', en:'Full refund within 7 days if you have not used the tool. See <a href="terms.html#refund">Terms, Article 7</a>.'},
+    nContactT:{kr:'문의', en:'Contact'},
+    nContactD:{kr:'010-5929-6243 · mihyun555@gmail.com', en:'010-5929-6243 · mihyun555@gmail.com'},
+    bannerTitle:{kr:'워크지도 함께 쓰신다면 구독 플랜이 더 알뜰해요', en:'Using worksheets too? A plan saves more'},
+    bannerSub:{kr:'뮤직랩 교구와 워크지 다운로드를 함께 이용하는 플랜을 확인해보세요.', en:'See plans that bundle Music Lab tools with worksheet downloads.'},
+    bannerBtn:{kr:'구독 플랜 보기', en:'See subscription plans'}
+  });
+
+  ClazzApp.onReady(function(){
+  ClazzApp.initLangToggle(PAGE_I18N, function(){
+    ClazzApp.paintAuthNav();
+    renderAll();
+  });
+  });
+})();
+</script>
+
+</body>
+</html>
