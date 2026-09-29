@@ -163,7 +163,9 @@
     else btnLabel = lang === 'en' ? 'Subscribe and start' : '구독하고 시작하기';
 
     tile.innerHTML =
-      '<div class="game-tile-icon"><svg viewBox="0 0 130 55" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' + (iconPaths[item.id] || '') + '</svg></div>' +
+      (item.thumb
+        ? '<div class="game-tile-icon has-thumb"><img src="' + item.thumb + '" alt="' + ClazzApp.t(item.name) + ' 화면" loading="lazy"></div>'
+        : '<div class="game-tile-icon"><svg viewBox="0 0 130 55" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' + (iconPaths[item.id] || '') + '</svg></div>') +
       (item.kind ? '<p style="font-size:0.78rem;color:var(--gold-bright);font-weight:600;">' + ClazzApp.t(item.kind) + '</p>' : '') +
       '<h3>' + ClazzApp.t(item.name) + '</h3>' +
       '<p>' + ClazzApp.t(item.desc) + '</p>' +

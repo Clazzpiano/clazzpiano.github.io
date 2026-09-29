@@ -548,6 +548,15 @@
       gameCardWrap.innerHTML = ClazzApp.comingSoonHTML();
       return;
     }
+    if(FEATURED_GAME.thumb){
+      var media = document.querySelector('#gameCardWrap .game-media');
+      if(media && !media.classList.contains('has-thumb')){
+        media.classList.add('has-thumb');
+        media.innerHTML = '<img src="' + FEATURED_GAME.thumb + '" alt="">';
+      }
+      var mediaImg = document.querySelector('#gameCardWrap .game-media img');
+      if(mediaImg) mediaImg.alt = ClazzApp.t(FEATURED_GAME.name) + (ClazzApp.getLang() === 'en' ? ' screen' : ' 화면');
+    }
     $('#featuredGameKicker').textContent = ClazzApp.t(FEATURED_GAME.kind);
     $('#featuredGameTitle').textContent = ClazzApp.t(FEATURED_GAME.name);
     $('#featuredGameDesc').textContent = ClazzApp.t(FEATURED_GAME.desc);

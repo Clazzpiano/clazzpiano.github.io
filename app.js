@@ -176,7 +176,7 @@ window.ClazzApp = (function(){
   // billing:'monthly' 인 상품은 매월 자동결제(정기결제)로 판매돼요.
   // url: 실제 교구 페이지 주소(비워두면 '준비 중' 화면이 떠요)
   var GAMES = [
-    { id:'note-brain', billing:'monthly', price:3900, url:'musiclab/note-brain.html',
+    { id:'note-brain', billing:'monthly', price:3900, url:'musiclab/note-brain.html', thumb:'images/note-brain-thumb.jpg',
       kind:{kr:'계이름 트레이닝 교구', en:'Note-reading training tool'},
       name:{kr:'계이름 브레인', en:'Note Name Brain'},
       desc:{kr:'큰보표 옆으로 흘러오는 음표를 보고 박자에 맞춰 도레미파솔라시 버튼을 누르며 계이름을 익히는 교구예요. 음자리 범위와 덧줄, 박자, 빠르기를 아이 수준에 맞게 고를 수 있어요.',
