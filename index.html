@@ -514,7 +514,7 @@
     var tagsWrap = $('#featuredGameTags');
     tagsWrap.innerHTML = ClazzApp.t(FEATURED_GAME.tags).map(function(tag){ return '<span>' + tag + '</span>'; }).join('');
     var unit = ClazzApp.getLang() === 'en' ? ' / mo · auto-renews monthly' : ' / 월 · 매월 자동결제';
-    $('#featuredGamePrice').innerHTML = ClazzApp.money(FEATURED_GAME.price) + '<span>' + unit + '</span>';
+    $('#featuredGamePrice').innerHTML = ClazzApp.labPrice(FEATURED_GAME).label + '<span>' + unit + '</span>';
     refreshGameButton();
   }
 
@@ -530,7 +530,8 @@
     }else{
       payBtn.textContent = lang === 'en' ? 'Subscribe and start' : '구독하고 시작하기';
       payBtn.onclick = function(){
-        var chargeProduct = { name: FEATURED_GAME.name, price: FEATURED_GAME.price, type: 'lab', id: FEATURED_GAME.id, recurring: FEATURED_GAME.billing === 'monthly' };
+        var fp = ClazzApp.labPrice(FEATURED_GAME);
+        var chargeProduct = { name: FEATURED_GAME.name, price: fp.amount, currency: fp.currency, type: 'lab', id: FEATURED_GAME.id, recurring: FEATURED_GAME.billing === 'monthly' };
         ClazzApp.openPaymentFlow(chargeProduct, function(){
           // 정기결제 확정은 서버(Cloud Functions)가 포트원에 확인한 뒤 이미 처리했어요.
           refreshGameButton();

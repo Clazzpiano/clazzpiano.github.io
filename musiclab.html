@@ -150,12 +150,13 @@
     var monthly = item.billing === 'monthly';
 
     var activeTag = lang === 'en' ? 'Active' : '이용 중';
+    var pr = ClazzApp.labPrice(item);
     var unit = monthly ? (lang === 'en' ? ' / mo' : ' / 월') : (lang === 'en' ? ' · 1 month' : ' · 1개월');
     var billingTag = monthly ? '<span class="billing-badge">' + (lang === 'en' ? 'Monthly auto-billing' : '매월 자동결제') + '</span>' : '';
 
     var priceRow = active
       ? '<div class="card-price-row"><span class="owned-badge">' + activeTag + '</span></div>'
-      : '<div class="card-price-row"><span class="price-tag">' + ClazzApp.money(item.price) + '<span style="font-size:0.72rem;font-weight:400;color:var(--ink-soft);">' + unit + '</span></span>' + billingTag + '</div>';
+      : '<div class="card-price-row"><span class="price-tag">' + pr.label + '<span style="font-size:0.72rem;font-weight:400;color:var(--ink-soft);">' + unit + '</span></span>' + billingTag + '</div>';
 
     var btnLabel;
     if(!loggedIn) btnLabel = lang === 'en' ? 'Log in to subscribe' : '로그인하고 구독하기';
@@ -176,7 +177,7 @@
     tile.querySelector('button').addEventListener('click', function(){
       if(!loggedIn){ ClazzApp.requireLogin(window.location.href); return; }
       if(active){ ClazzApp.launchGame(item); return; }
-      var chargeProduct = { name: item.name, price: item.price, type: 'lab', id: item.id, recurring: monthly };
+      var chargeProduct = { name: item.name, price: pr.amount, currency: pr.currency, type: 'lab', id: item.id, recurring: monthly };
       ClazzApp.openPaymentFlow(chargeProduct, function(){
         renderAll();
         ClazzApp.launchGame(item);

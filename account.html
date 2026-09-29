@@ -369,7 +369,7 @@
         var meta = '';
         if(sub){
           if(sub.status === 'active'){
-            meta = (lang === 'en' ? 'Next billing ' : '다음 결제일 ') + ClazzApp.formatDate(sub.nextBillingAt) + ' · ' + ClazzApp.money(sub.price) + (lang === 'en' ? '/mo' : '/월');
+            meta = (lang === 'en' ? 'Next billing ' : '다음 결제일 ') + ClazzApp.formatDate(sub.nextBillingAt) + ' · ' + (sub.currency === 'USD' ? ClazzApp.moneyUSD(sub.price) : ClazzApp.money(sub.price)) + (lang === 'en' ? '/mo' : '/월');
           }else{
             meta = (lang === 'en' ? 'Cancelled · available until ' : '해지됨 · 이용 가능 기한 ') + ClazzApp.formatDate(sub.accessUntil);
           }
@@ -447,7 +447,7 @@
     var historyList = $('#historyList');
     historyList.innerHTML = '';
     var combined = ent.purchaseHistory.map(function(h){
-      return {label: ClazzApp.historyItemLabel(h), price: h.price, date: h.date};
+      return {label: ClazzApp.historyItemLabel(h), price: h.price, currency: h.currency, date: h.date};
     }).concat(ent.freeDownloads.map(function(d){
       return {label: ClazzApp.freeDownloadLabel(d), price: 0, date: d.date};
     }));
@@ -460,7 +460,7 @@
         var li = document.createElement('li');
         li.innerHTML =
           '<span>' + item.label + '</span>' +
-          '<span class="h-price">' + (item.price > 0 ? ClazzApp.money(item.price) : (lang === 'en' ? 'Free' : '무료')) + '</span>' +
+          '<span class="h-price">' + (item.price > 0 ? (item.currency === 'USD' ? ClazzApp.moneyUSD(item.price) : ClazzApp.money(item.price)) : (lang === 'en' ? 'Free' : '무료')) + '</span>' +
           '<span class="h-date">' + ClazzApp.formatDate(item.date) + '</span>';
         historyList.appendChild(li);
       });

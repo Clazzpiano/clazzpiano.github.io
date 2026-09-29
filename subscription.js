@@ -33,7 +33,7 @@ const OPTS = { secrets: [PORTONE_API_KEY, PORTONE_API_SECRET] };
 
 // ⚠️ 가격은 반드시 서버에서 정해요. app.js의 가격과 항상 같게 유지해주세요.
 const PRODUCTS = {
-  'lab:note-brain': { price: 3900, name: '계이름 브레인 (월 정기결제)' },
+  'lab:note-brain': { price: 3900, priceUSD: 3.99, name: '계이름 브레인 (월 정기결제)', nameEn: 'Solfège Brain (monthly)' },
   'tier:basic':      { price: 9900,  name: '베이직 구독',   games: 1, worksheets: 5 },
   'tier:standard':   { price: 15900, name: '스탠다드 구독', games: 2, worksheets: 10 },
   'tier:premium':    { price: 19900, name: '프리미엄 구독', games: 3, worksheets: 10 }
@@ -81,13 +81,14 @@ async function scheduleNext(token, sub, when) {
       merchant_uid: merchantUid,
       schedule_at: Math.floor(when.getTime() / 1000),
       amount: sub.price,
+      currency: sub.currency || 'KRW',
       name: sub.name
     }]
   });
   if (json.code !== 0) throw new Error('다음 결제 예약 실패: ' + json.message);
   await db.collection('billing').doc(merchantUid).set({
     uid: sub.uid, productType: sub.productType, productId: sub.productId,
-    customerUid: sub.customerUid, price: sub.price, name: sub.name, scheduledAt: when.toISOString()
+    customerUid: sub.customerUid, price: sub.price, currency: sub.currency || 'KRW', name: sub.name, scheduledAt: when.toISOString()
   });
   return merchantUid;
 }
@@ -97,13 +98,13 @@ async function applyPaidPeriod(sub, paidAt, nextBillingAt, isFirst) {
   const ref = db.collection('entitlements').doc(sub.uid);
   const history = {
     kind: sub.productType === 'lab' ? 'lab-subscription' : 'subscription',
-    refId: sub.productId, price: sub.price, date: paidAt.toISOString()
+    refId: sub.productId, price: sub.price, currency: sub.currency || 'KRW', date: paidAt.toISOString()
   };
   if (sub.productType === 'lab') {
     await ref.set({
       labSubscriptions: {
         [sub.productId]: {
-          status: 'active', price: sub.price, customerUid: sub.customerUid,
+          status: 'active', price: sub.price, currency: sub.currency || 'KRW', customerUid: sub.customerUid,
           nextBillingAt: nextBillingAt.toISOString(), accessUntil: nextBillingAt.toISOString(),
           ...(isFirst ? { startedAt: paidAt.toISOString() } : {})
         }
@@ -130,10 +131,13 @@ exports.startSubscription = onCall(OPTS, async (req) => {
   if (!req.auth) throw new HttpsError('unauthenticated', '로그인이 필요해요.');
   const uid = req.auth.uid;
   const { customerUid, expectedAmount, productType, productId } = req.data || {};
+  const currency = (req.data && req.data.currency) === 'USD' ? 'USD' : 'KRW';
   const product = PRODUCTS[productType + ':' + productId];
   if (!product) throw new HttpsError('invalid-argument', '알 수 없는 상품이에요.');
-  if (product.price !== expectedAmount) throw new HttpsError('invalid-argument', '금액이 맞지 않아요.');
-  if (customerUid !== 'clazz_' + uid + '_' + productType + '_' + productId) {
+  const price = currency === 'USD' ? product.priceUSD : product.price;
+  if (!price || price !== expectedAmount) throw new HttpsError('invalid-argument', '금액이 맞지 않아요.');
+  const name = currency === 'USD' ? (product.nameEn || product.name) : product.name;
+  if (customerUid !== 'clazz_' + uid + '_' + productType + '_' + productId + (currency === 'USD' ? '_usd' : '')) {
     throw new HttpsError('permission-denied', '결제 정보가 올바르지 않아요.');
   }
 
@@ -146,13 +150,13 @@ exports.startSubscription = onCall(OPTS, async (req) => {
   // 첫 달 결제
   const firstUid = newMerchantUid('clazzfirst');
   const pay = await portone(token, 'POST', '/subscribe/payments/again', {
-    customer_uid: customerUid, merchant_uid: firstUid, amount: product.price, name: product.name
+    customer_uid: customerUid, merchant_uid: firstUid, amount: price, currency, name
   });
   if (pay.code !== 0 || !pay.response || pay.response.status !== 'paid') {
     throw new HttpsError('aborted', '첫 결제가 승인되지 않았어요: ' + ((pay.response && pay.response.fail_reason) || pay.message));
   }
 
-  const sub = { uid, productType, productId, customerUid, price: product.price, name: product.name };
+  const sub = { uid, productType, productId, customerUid, price, currency, name };
   const paidAt = new Date();
   const nextAt = addOneMonth(paidAt);
   await scheduleNext(token, sub, nextAt);
@@ -206,7 +210,13 @@ exports.cancelSubscription = onCall(OPTS, async (req) => {
   const { productType, productId } = req.data || {};
   if (!PRODUCTS[productType + ':' + productId]) throw new HttpsError('invalid-argument', '알 수 없는 상품이에요.');
 
-  const customerUid = 'clazz_' + uid + '_' + productType + '_' + productId;
+  // 원화/달러 중 실제로 등록된 카드(customer_uid)로 해지해요.
+  const entSnap = await db.collection('entitlements').doc(uid).get();
+  const ent = entSnap.exists ? entSnap.data() : {};
+  const stored = productType === 'lab'
+    ? (ent.labSubscriptions && ent.labSubscriptions[productId] && ent.labSubscriptions[productId].customerUid)
+    : (ent.subscription && ent.subscription.customerUid);
+  const customerUid = stored || ('clazz_' + uid + '_' + productType + '_' + productId);
   const token = await portoneToken();
   const json = await portone(token, 'POST', '/subscribe/payments/unschedule', { customer_uid: customerUid });
   // 예약이 이미 없는 경우(code !== 0)도 해지 상태로 기록해요.
