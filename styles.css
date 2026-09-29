@@ -1039,3 +1039,8 @@
     .lab-notice dl{grid-template-columns:1fr; gap:2px 0;}
     .lab-notice dd{margin-bottom:10px;}
   }
+
+  /* 뮤직랩 교구가 실제로 열릴 때는 플레이어를 크게 */
+  #gamePlayerModal .modal-box:has(.player-stage.has-frame){max-width:min(1100px, 96vw);}
+  .player-stage.has-frame{aspect-ratio:auto; height:min(84vh, 820px); padding:0; background:#FFFAF3;}
+  .player-stage.has-frame iframe{display:block;}

@@ -176,12 +176,12 @@ window.ClazzApp = (function(){
   // billing:'monthly' 인 상품은 매월 자동결제(정기결제)로 판매돼요.
   // url: 실제 교구 페이지 주소(비워두면 '준비 중' 화면이 떠요)
   var GAMES = [
-    { id:'note-brain', billing:'monthly', price:3900, url:'',
+    { id:'note-brain', billing:'monthly', price:3900, url:'musiclab/note-brain.html',
       kind:{kr:'계이름 트레이닝 교구', en:'Note-reading training tool'},
       name:{kr:'계이름 브레인', en:'Note Name Brain'},
-      desc:{kr:'오선 위에 나오는 음표를 보고 계이름을 맞히며 악보 읽는 힘을 기르는 교구예요. 높은음자리표와 낮은음자리표 계이름을 단계별로 익힐 수 있어요.',
-            en:'A tool where children read notes on the staff and name them, building sight-reading step by step in treble and bass clef.'},
-      tags:{kr:['6세 ~ 초등', '계이름', '악보 읽기'], en:['Age 6 to elementary', 'Note names', 'Sight-reading']} }
+      desc:{kr:'큰보표 옆으로 흘러오는 음표를 보고 박자에 맞춰 도레미파솔라시 버튼을 누르며 계이름을 익히는 교구예요. 음자리 범위와 덧줄, 박자, 빠르기를 아이 수준에 맞게 고를 수 있어요.',
+            en:'Notes flow sideways along the grand staff and children tap Do-Re-Mi buttons in time to name them. Choose the note range, ledger lines, meter and tempo to fit each child.'},
+      tags:{kr:['높은음·낮은음자리표', '음자리 범위 5단계', '빠르기 3단계'], en:['Treble & bass clef', '5 note ranges', '3 tempos']} }
   ];
 
   // 실제 워크지/악보 파일이 Storage에 업로드되기 전까지는 비워둡니다.
@@ -751,10 +751,12 @@ window.ClazzApp = (function(){
     if(titleEl) titleEl.textContent = t(product.name);
     var stage = $('#playerStage');
     if(stage){
+      stage.classList.remove('has-frame');
       stage.innerHTML = '<div class="spinner"></div><p>' + (lang === 'en' ? 'Loading.' : '교구를 불러오는 중이에요.') + '</p>';
     }
     openModal('gamePlayerModal');
     if(product.url && stage){
+      stage.classList.add('has-frame');
       stage.innerHTML = '<iframe src="' + product.url + '" title="' + t(product.name) + '" style="width:100%;height:100%;border:0;" allow="autoplay; fullscreen"></iframe>';
       return;
     }

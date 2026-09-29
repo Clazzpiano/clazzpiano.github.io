@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /musiclab/
 
 Sitemap: https://clazzpiano.github.io/sitemap.xml
