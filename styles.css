@@ -152,7 +152,7 @@
   }
   .hero .wrap{
     display:grid;
-    grid-template-columns:1.05fr 0.95fr;
+    grid-template-columns:minmax(0,1.05fr) minmax(0,0.95fr);
     gap:56px;
     align-items:center;
   }
@@ -1052,8 +1052,11 @@
   .game-media.has-thumb img{width:100%; max-width:440px; display:block; border-radius:6px; box-shadow:0 10px 30px rgba(0,0,0,0.25);}
 
   /* 홈 히어로 수채화 그림: 흰 여백이 아이보리 배경에 자연스럽게 스며들도록 */
+  .hero .wrap > *{min-width:0;}
+  .hero-art{min-width:0; overflow:hidden;}
   .hero-art img{
-    width:100%; height:auto; display:block; mix-blend-mode:multiply;
+    width:100%; height:auto; aspect-ratio:1/1; object-fit:cover; display:block; mix-blend-mode:multiply;
+    color:transparent; font-size:0;
     -webkit-mask-image:radial-gradient(ellipse 72% 72% at 50% 50%, #000 62%, transparent 100%);
             mask-image:radial-gradient(ellipse 72% 72% at 50% 50%, #000 62%, transparent 100%);
   }
