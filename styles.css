@@ -1050,3 +1050,10 @@
   .game-tile-icon.has-thumb img{width:100%; height:100%; object-fit:cover; display:block;}
   .game-media.has-thumb{padding:28px;}
   .game-media.has-thumb img{width:100%; max-width:440px; display:block; border-radius:6px; box-shadow:0 10px 30px rgba(0,0,0,0.25);}
+
+  /* 홈 히어로 수채화 그림: 흰 여백이 아이보리 배경에 자연스럽게 스며들도록 */
+  .hero-art img{
+    width:100%; height:auto; display:block; mix-blend-mode:multiply;
+    -webkit-mask-image:radial-gradient(ellipse 72% 72% at 50% 50%, #000 62%, transparent 100%);
+            mask-image:radial-gradient(ellipse 72% 72% at 50% 50%, #000 62%, transparent 100%);
+  }
