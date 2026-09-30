@@ -609,14 +609,14 @@ window.ClazzApp = (function(){
      ========================================================= */
   var IMP_STORE_CODE = 'imp47257084';
 
-  // ⚠️ 포트원 채널 설정
+  // ⚠️ 포트원 채널 설정 — 포트원 콘솔 > 결제 연동 > 채널 관리 의 "채널 키"(channel-key-...)를 넣어주세요.
   // - PG_ONETIME : 단건 결제(워크지·악보+MR)용 KG이니시스 채널
   // - PG_BILLING : 정기결제(빌링키 발급)용 KG이니시스 채널
   //   정기결제는 일반결제와 "다른 MID"를 써야 해요. 테스트 MID는 INIBillTst 이고,
   //   포트원 관리자 콘솔 > 결제 연동 > 채널 관리에서 "KG이니시스 · 정기결제" 채널을 추가해야 결제창이 열려요.
   //   카드사 심사가 통과되면 실제 발급받은 정기결제 MID로 바꿔주세요.
-  var PG_ONETIME = 'html5_inicis.INIpayTest';
-  var PG_BILLING = 'html5_inicis.INIBillTst';
+  var PG_ONETIME = 'channel-key-23e276c8-8a4b-4392-bb83-3056721e676c'; // KG이니시스 일반결제 테스트 (INIpayTest)
+  var PG_BILLING = 'channel-key-934badf2-4e36-4f76-9dd5-eba1ce874b12'; // KG이니시스 정기결제 테스트 (INIBillTst)
   // ⚠️ 달러(USD) 정기결제 = 페이팔 정기결제(Reference Transaction, paypal_v2)
   // - PAYPAL_CHANNEL_KEY : 포트원 콘솔 > 결제 연동 > 연동 정보 > 채널 관리 에 있는 페이팔 채널의 "채널 키"
   //   비어 있으면 영어 화면에서는 "준비 중" 안내만 나오고 결제가 열리지 않아요(원화로 잘못 청구되지 않도록).
@@ -933,7 +933,7 @@ window.ClazzApp = (function(){
 
       var merchantUid = 'clazzpiano_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
       var req = {
-        pg: recurring ? PG_BILLING : PG_ONETIME,
+        // 채널 키(channel-key-...)면 channelKey 로, 아니면 예전 방식(pg)으로 보내요.
         pay_method: 'card',
         merchant_uid: merchantUid,
         name: t(product.name) + (recurring ? (lang === 'en' ? ' (monthly)' : ' (월 정기결제)') : ''),
@@ -944,6 +944,8 @@ window.ClazzApp = (function(){
         // KG이니시스는 구매자 연락처가 없으면 결제창이 열리지 않아요.
         buyer_tel: user.phone || '010-0000-0000'
       };
+      var channel = recurring ? PG_BILLING : PG_ONETIME;
+      if(/^channel-key-/.test(channel)) req.channelKey = channel; else req.pg = channel;
       if(recurring){
         // 카드 정보는 PG사가 보관하고, 우리는 이 고객 식별값(customer_uid)으로만 매달 청구를 요청해요.
         req.customer_uid = 'clazz_' + user.uid + '_' + product.type + '_' + product.id;
