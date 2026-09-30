@@ -431,7 +431,7 @@
 
       var priceRow = owned
         ? '<div class="card-price-row"><span class="owned-badge">' + ownedTag + '</span></div>'
-        : '<div class="card-price-row"><span class="price-tag">' + ClazzApp.money(item.price) + '</span>' +
+        : '<div class="card-price-row"><span class="price-tag">' + ClazzApp.labPrice(item).label + '</span>' +
           (loggedIn ? '<span class="lock-badge">' + bundleTag + '</span>' : '<span class="lock-badge">' + loginTag + '</span>') + '</div>';
 
       var btnLabel;
@@ -478,7 +478,8 @@
       }else{
         card.querySelector('[data-dl="buy"]').addEventListener('click', function(){
           if(!loggedIn){ ClazzApp.requireLogin(window.location.href); return; }
-          var chargeProduct = { name: item.name, price: item.price, type: 'sheetmusic', id: item.id };
+          var smp = ClazzApp.labPrice(item);
+        var chargeProduct = { name: item.name, price: smp.amount, currency: smp.currency, type: 'sheetmusic', id: item.id };
           ClazzApp.openPaymentFlow(chargeProduct, function(){
             // 구매 확정은 서버(Cloud Functions)가 결제를 검증한 뒤 이미 처리했어요.
             renderSheetMusicPreview();

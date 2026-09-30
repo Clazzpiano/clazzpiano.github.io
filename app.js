@@ -642,7 +642,9 @@ window.ClazzApp = (function(){
     paypalHint:{kr:'아래 페이팔 버튼으로 결제 계정을 등록하면 첫 달이 결제되고, 이후 매월 자동으로 결제돼요.', en:'Register your PayPal account with the button below. Your first month is charged now, then monthly after that.'},
     paypalConsentFirst:{kr:'먼저 위의 정기결제 동의에 체크해주세요.', en:'Please tick the monthly billing agreement above to continue with PayPal.'},
     paypalPending:{kr:'페이팔에서 결제를 확인하고 있어요. 잠시 후 마이페이지에서 확인해주세요.', en:'PayPal is confirming your payment. Please check My Page in a few minutes.'},
-    paypalFailed:{kr:'페이팔 등록이 완료되지 않았어요. 다시 시도해주세요.', en:'PayPal registration was not completed. Please try again.'}
+    paypalFailed:{kr:'페이팔 등록이 완료되지 않았어요. 다시 시도해주세요.', en:'PayPal registration was not completed. Please try again.'},
+    paypalSpbHint:{kr:'아래 페이팔 버튼으로 결제해주세요.', en:'Pay securely with the PayPal button below.'},
+    paypalPayFailed:{kr:'페이팔 결제가 완료되지 않았어요. 다시 시도해주세요.', en:'PayPal payment was not completed. Please try again.'}
   };
 
   // 결제 모달 안에 "정기결제 동의" 영역을 한 번만 만들어 넣어요 (모든 페이지 공통).
@@ -678,7 +680,8 @@ window.ClazzApp = (function(){
     wrap.id = 'paypalRtWrap';
     wrap.className = 'paypal-rt-wrap';
     wrap.innerHTML = '<p class="paypal-hint" id="paypalHint"></p>' +
-      '<div class="portone-ui-container" data-portone-ui-type="paypal-rt"></div>';
+      '<div class="portone-ui-container" data-portone-ui-type="paypal-rt"></div>' +
+      '<div class="portone-ui-container" data-portone-ui-type="paypal-spb"></div>';
     anchor.parentNode.insertBefore(wrap, anchor);
     return wrap;
   }
@@ -729,12 +732,83 @@ window.ClazzApp = (function(){
     });
   }
 
+  /* ---------- 페이팔 일반결제 (영어 화면 · USD 단건: 워크지·악보) ----------
+     페이팔 버튼(SPB)으로 결제하고, 서버(verifyPayPalPayment)가 포트원에 직접 확인한 뒤 구매를 확정해요. */
+  var paypalSpbState = { rendered:false, current:null };
+
+  function onPaypalSpbDone(rsp){
+    var cur = paypalSpbState.current;
+    if(!cur) return;
+    $('#payStepMethod').classList.remove('active');
+    $('#payStepProcessing').classList.add('active');
+    fbFunctions.httpsCallable('verifyPayPalPayment')({
+      impUid: rsp && rsp.imp_uid,
+      merchantUid: rsp && rsp.merchant_uid,
+      expectedAmount: cur.product.price,
+      productType: cur.product.type,
+      productId: cur.product.id
+    }).then(function(res){
+      var data = (res && res.data) || {};
+      return refreshEntitlements().then(function(){
+        closeModal('paymentModal');
+        if(data.pending){ showToast(t(PAY_TEXT.paypalPending)); return; }
+        showToast(getLang() === 'en' ? 'Payment complete.' : '결제가 완료됐어요.');
+        cur.onSuccess();
+      });
+    }).catch(function(err){
+      console.error('클래쯔피아노: 페이팔 결제 확인 실패', err, rsp);
+      $('#payStepProcessing').classList.remove('active');
+      $('#payStepMethod').classList.add('active');
+      showToast(t(PAY_TEXT.paypalPayFailed));
+    });
+  }
+
+  function startPaypalSpb(product, onSuccess, ppWrap){
+    var hint = $('#paypalHint');
+    var rtBox = ppWrap.querySelector('[data-portone-ui-type="paypal-rt"]');
+    var spbBox = ppWrap.querySelector('[data-portone-ui-type="paypal-spb"]');
+    rtBox.style.display = 'none';
+    ppWrap.style.display = 'block';
+    if(!PAYPAL_CHANNEL_KEY){
+      hint.textContent = t(PAY_TEXT.usdNotReady);
+      spbBox.style.display = 'none';
+      return;
+    }
+    var user = currentUser();
+    if(!user){ requireLogin(window.location.href); return; }
+    if(typeof IMP === 'undefined'){
+      showToast('Payment module failed to load. Please refresh and try again.');
+      return;
+    }
+    paypalSpbState.current = { product: product, onSuccess: onSuccess };
+    var req = {
+      channelKey: PAYPAL_CHANNEL_KEY,
+      pay_method: 'paypal',
+      merchant_uid: 'clazzpiano_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
+      name: t(product.name),
+      amount: product.price,
+      currency: 'USD',
+      buyer_email: user.email || '',
+      buyer_name: user.name || ''
+    };
+    hint.textContent = t(PAY_TEXT.paypalSpbHint);
+    spbBox.style.display = 'block';
+    IMP.init(IMP_STORE_CODE);
+    if(!paypalSpbState.rendered){
+      IMP.loadUI('paypal-spb', req, onPaypalSpbDone);
+      paypalSpbState.rendered = true;
+    }else{
+      IMP.updateLoadUIRequest('paypal-spb', req);
+    }
+  }
+
   function startPaypalCheckout(product, onSuccess, consentBox, ppWrap){
+    ppWrap.querySelector('[data-portone-ui-type="paypal-spb"]').style.display = 'none';
     var hint = $('#paypalHint');
     if(!PAYPAL_CHANNEL_KEY){
       ppWrap.style.display = 'block';
       hint.textContent = t(PAY_TEXT.usdNotReady);
-      ppWrap.querySelector('.portone-ui-container').style.display = 'none';
+      ppWrap.querySelector('[data-portone-ui-type="paypal-rt"]').style.display = 'none';
       return;
     }
     var user = currentUser();
@@ -762,12 +836,12 @@ window.ClazzApp = (function(){
     };
 
     ppWrap.style.display = 'block';
-    ppWrap.querySelector('.portone-ui-container').style.display = 'none';
+    ppWrap.querySelector('[data-portone-ui-type="paypal-rt"]').style.display = 'none';
     hint.textContent = t(PAY_TEXT.paypalConsentFirst);
 
     function showButton(){
       hint.textContent = t(PAY_TEXT.paypalHint);
-      ppWrap.querySelector('.portone-ui-container').style.display = 'block';
+      ppWrap.querySelector('[data-portone-ui-type="paypal-rt"]').style.display = 'block';
       IMP.init(IMP_STORE_CODE);
       if(!paypalState.rendered){
         IMP.loadUI('paypal-rt', req, onPaypalDone);
@@ -780,7 +854,7 @@ window.ClazzApp = (function(){
       if(consentBox.checked){ showButton(); }
       else{
         hint.textContent = t(PAY_TEXT.paypalConsentFirst);
-        ppWrap.querySelector('.portone-ui-container').style.display = 'none';
+        ppWrap.querySelector('[data-portone-ui-type="paypal-rt"]').style.display = 'none';
       }
     };
   }
@@ -827,8 +901,8 @@ window.ClazzApp = (function(){
       if(msg) showToast(msg);
     }
 
-    // 영어 화면(달러) 정기결제는 페이팔 버튼으로 진행해요.
-    var usePaypal = recurring && currency === 'USD';
+    // 영어 화면(달러) 결제는 모두 페이팔 버튼으로 진행해요. (정기결제 = RT, 단건 = SPB)
+    var usePaypal = currency === 'USD';
     var ppWrap = ensurePaypalBox();
     var methods = document.querySelector('#payStepMethod .pay-methods');
     if(methods) methods.style.display = usePaypal ? 'none' : '';
@@ -836,7 +910,8 @@ window.ClazzApp = (function(){
     if(ppWrap) ppWrap.style.display = 'none';
     if(consentBox) consentBox.onchange = null;
     if(usePaypal && ppWrap){
-      startPaypalCheckout(product, onSuccess, consentBox, ppWrap);
+      if(recurring) startPaypalCheckout(product, onSuccess, consentBox, ppWrap);
+      else startPaypalSpb(product, onSuccess, ppWrap);
       return;
     }
 

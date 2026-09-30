@@ -214,9 +214,10 @@
         }
         return;
       }
-      // 실제 결제는 항상 원화(KRW)로 이루어져요 — 지금 연결된 PG(KCP)가 국내 카드 결제만 지원하기 때문에,
-      // 화면엔 달러로 보여도 결제창에는 원화 금액이 뜹니다. (해외 카드/통화 결제는 추후 별도 연동 필요)
-      var chargeProduct = { name: sheet.name, price: priceInfo.krw, type: 'worksheet', id: ClazzApp.worksheetLangId(sheet) };
+      // 영어 화면은 페이팔로 달러 결제, 한국어 화면은 KG이니시스로 원화 결제해요.
+      var useUsd = lang === 'en' && priceInfo.usd;
+      var chargeProduct = { name: sheet.name, price: useUsd ? priceInfo.usd : priceInfo.krw, currency: useUsd ? 'USD' : 'KRW',
+                            type: 'worksheet', id: ClazzApp.worksheetLangId(sheet) };
       ClazzApp.openPaymentFlow(chargeProduct, function(){
         // 구매 확정(entitlements 반영)은 서버(Cloud Functions)가 결제를 검증한 뒤 이미 처리했어요.
         ClazzApp.downloadStorageFile(ClazzApp.worksheetStoragePath(sheet), ClazzApp.t(sheet.name));

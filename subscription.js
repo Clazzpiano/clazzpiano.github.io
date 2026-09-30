@@ -180,7 +180,25 @@ exports.portoneWebhook = onRequest(OPTS, async (req, res) => {
     if (!imp_uid || !merchant_uid) { res.status(200).send('ignored'); return; }
 
     const billingSnap = await db.collection('billing').doc(merchant_uid).get();
-    if (!billingSnap.exists) { res.status(200).send('not-subscription'); return; }
+    if (!billingSnap.exists) {
+      // 페이팔 단건 결제(승인 대기였던 건)의 승인 알림인지 확인
+      const byMerchant = await db.collection('paypalOnetimeByMerchant').doc(merchant_uid).get();
+      if (byMerchant.exists) {
+        const lockRef = db.collection('paypalOnetime').doc(byMerchant.data().impUid);
+        const lock = await lockRef.get();
+        if (lock.exists && !lock.data().granted) {
+          const tokenO = await portoneToken();
+          const pay = (await portone(tokenO, 'GET', '/payments/' + encodeURIComponent(imp_uid))).response;
+          const L = lock.data();
+          if (pay && pay.status === 'paid' && pay.currency === 'USD' && pay.amount === L.price) {
+            await grantOnetime(L.uid, L.productType, L.productId, L.price, pay.imp_uid);
+            await lockRef.update({ granted: true, at: new Date().toISOString() });
+          }
+        }
+        res.status(200).send('onetime'); return;
+      }
+      res.status(200).send('not-subscription'); return;
+    }
     const sub = billingSnap.data();
     if (billingSnap.data().handled) { res.status(200).send('already'); return; }
 
@@ -238,4 +256,69 @@ exports.cancelSubscription = onCall(OPTS, async (req) => {
     await ref.set({ subscription: { status: 'cancelled', cancelledAt: new Date().toISOString() } }, { merge: true });
   }
   return { ok: true };
+});
+
+/* =========================================================
+   4) 페이팔 단건 결제(영어 화면 · USD) 확인 — 워크지 / 악보+MR
+   브라우저가 알려준 imp_uid 로 포트원에 직접 결제를 조회해서
+   "결제 완료 + USD + 서버 가격표와 같은 금액"일 때만 구매를 확정해요.
+   ⚠️ app.js 의 달러 가격을 바꾸면 아래 USD_ONETIME 도 똑같이 바꿔주세요.
+   ========================================================= */
+const USD_ONETIME = {
+  // 워크지 (영어판 id = 워크지id + '-en'), 할인 기간이 있으면 schedule 로 적어요.
+  'worksheet:sudoku1-en': { schedule: { until: '2026-10-15', before: 3.99, after: 4.99 } },
+  // 악보+MR — 달러 가격이 정해지면 여기에 추가해요. 예) 'sheetmusic:tchaikovsky-concerto-1': { price: 4.99 }
+};
+function usdPriceFor(key) {
+  const p = USD_ONETIME[key];
+  if (!p) return null;
+  if (p.schedule) {
+    const cutoff = new Date(p.schedule.until + 'T23:59:59+09:00');
+    return new Date() <= cutoff ? p.schedule.before : p.schedule.after;
+  }
+  return p.price;
+}
+
+async function grantOnetime(uid, productType, productId, price, impUid) {
+  const ref = db.collection('entitlements').doc(uid);
+  const history = { kind: productType, refId: productId, price, currency: 'USD', date: new Date().toISOString(), impUid };
+  const field = productType === 'worksheet' ? 'paidWorksheetIds' : 'ownedSheetMusicIds';
+  await ref.set({
+    [field]: FieldValue.arrayUnion(productId),
+    purchaseHistory: FieldValue.arrayUnion(history)
+  }, { merge: true });
+}
+
+exports.verifyPayPalPayment = onCall(OPTS, async (req) => {
+  if (!req.auth) throw new HttpsError('unauthenticated', '로그인이 필요해요.');
+  const uid = req.auth.uid;
+  const { impUid, merchantUid, expectedAmount, productType, productId } = req.data || {};
+  if (productType !== 'worksheet' && productType !== 'sheetmusic') throw new HttpsError('invalid-argument', '알 수 없는 상품이에요.');
+  const price = usdPriceFor(productType + ':' + productId);
+  if (!price || price !== expectedAmount) throw new HttpsError('invalid-argument', '금액이 맞지 않아요.');
+
+  const token = await portoneToken();
+  let payment = null;
+  if (impUid) payment = (await portone(token, 'GET', '/payments/' + encodeURIComponent(impUid))).response;
+  if (!payment && merchantUid) payment = (await portone(token, 'GET', '/payments/find/' + encodeURIComponent(merchantUid))).response;
+  if (!payment) throw new HttpsError('not-found', '결제 정보를 찾지 못했어요.');
+  if (payment.currency !== 'USD' || payment.amount !== price) throw new HttpsError('failed-precondition', '결제 금액이 맞지 않아요.');
+
+  // 같은 결제로 두 번 지급되지 않도록 기록
+  const lockRef = db.collection('paypalOnetime').doc(payment.imp_uid);
+  const lock = await lockRef.get();
+  if (lock.exists && lock.data().granted) return { ok: true, already: true };
+
+  if (payment.status === 'paid') {
+    await grantOnetime(uid, productType, productId, price, payment.imp_uid);
+    await lockRef.set({ uid, productType, productId, price, granted: true, at: new Date().toISOString() });
+    return { ok: true };
+  }
+  if (payment.status === 'ready' || payment.status === 'pending') {
+    // 페이팔 승인 대기 — 웹훅(portoneWebhook)에서 승인되면 지급해요.
+    await lockRef.set({ uid, productType, productId, price, granted: false, merchantUid: payment.merchant_uid });
+    await db.collection('paypalOnetimeByMerchant').doc(payment.merchant_uid).set({ impUid: payment.imp_uid });
+    return { ok: true, pending: true };
+  }
+  throw new HttpsError('aborted', '결제가 완료되지 않았어요.');
 });
