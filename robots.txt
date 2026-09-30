@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /note-brain.html
+Disallow: /note-brain-en.html
 
 Sitemap: https://clazzpiano.github.io/sitemap.xml

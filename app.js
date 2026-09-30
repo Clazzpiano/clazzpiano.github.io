@@ -239,12 +239,12 @@ window.ClazzApp = (function(){
   // 악보+MR 예시: { id:'고유id', category:'classical'|'fourhands'|'ost'|'performance'|'event', price:3000,
   //               name:{kr:'...', en:'...'}, desc:{kr:'...', en:'...'} }
   var SHEET_MUSIC = [
-    { id:'xmas-we-wish-you', category:'christmas', price:2400, hasMr:false,
+    { id:'xmas-we-wish-you', category:'christmas', price:2400, priceUSD:2.4, hasMr:false,
       name:{kr:'We wish you a merry Christmas', en:'We wish you a merry Christmas'},
       desc:{kr:'크리스마스 연주회나 미션곡으로 쓸 수 있도록 약간의 재즈 분위기를 넣은 only 피아노 연주곡이예요.',
             en:'A piano-only arrangement with a touch of jazz, perfect for a Christmas recital or as an assignment piece.'},
       youtubeUrl:'https://youtu.be/JXUduEV90Wg?si=pxRY2gjR6I6HDCJL' },
-    { id:'tchaikovsky-concerto-1', category:'classical', price:6900, hasMr:false,
+    { id:'tchaikovsky-concerto-1', category:'classical', price:6900, priceUSD:6.9, hasMr:false,
       youtubeUrl:'https://youtu.be/AqrNZo6yyCA?si=c0qH14uHMbxpyNlw',
       level:{kr:'최상', en:'Expert'},
       instrument:{kr:'피아노 솔로', en:'Piano solo'},
