@@ -623,9 +623,9 @@ window.ClazzApp = (function(){
   // - PAYPAL_SANDBOX : 페이팔 테스트 계정이면 true, 실제 운영 계정이면 false
   // - PAYPAL_FRAUDNET_SOURCE : 페이팔 이상거래 방지(Fraudnet)용 식별값. 페이팔 판매자 ID + '_' + 페이지 이름 형태예요.
   //   (예: 7WBB3CKT63FRG_checkout-page) 페이팔/포트원에서 안내받은 값으로 바꿔주세요.
-  var PAYPAL_CHANNEL_KEY = '';
+  var PAYPAL_CHANNEL_KEY = 'channel-key-1dc3aafe-a14b-4ae6-991e-24674d8503b6';
   var PAYPAL_SANDBOX = true;
-  var PAYPAL_FRAUDNET_SOURCE = 'CLAZZPIANO_musiclab';
+  var PAYPAL_FRAUDNET_SOURCE = 'PA4DULN9V66L6_musiclab';
 
   var PAY_TEXT = {
     methodTitle:{kr:'결제 수단 선택', en:'Choose a payment method'},
