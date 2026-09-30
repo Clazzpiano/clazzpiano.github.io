@@ -147,16 +147,25 @@ exports.startSubscription = onCall(OPTS, async (req) => {
   const cust = await portone(token, 'GET', '/subscribe/customers/' + encodeURIComponent(customerUid));
   if (cust.code !== 0) throw new HttpsError('failed-precondition', '카드 등록을 확인하지 못했어요.');
 
+  const sub = { uid, productType, productId, customerUid, price, currency, name };
+
   // 첫 달 결제
-  const firstUid = newMerchantUid('clazzfirst');
+  // 페이팔은 브라우저에서 만든 주문번호(firstMerchantUid)를 써야 해요 — 페이팔 이상거래 방지 스크립트(Fraudnet)가 이 번호로 연결돼 있어요.
+  const clientUid = req.data && req.data.firstMerchantUid;
+  const firstUid = (currency === 'USD' && /^clazzfirst_\d+_[a-z0-9]+$/.test(clientUid || '')) ? clientUid : newMerchantUid('clazzfirst');
   const pay = await portone(token, 'POST', '/subscribe/payments/again', {
     customer_uid: customerUid, merchant_uid: firstUid, amount: price, currency, name
   });
-  if (pay.code !== 0 || !pay.response || pay.response.status !== 'paid') {
+  const status = pay.response && pay.response.status;
+  if (pay.code === 0 && (status === 'ready' || status === 'pending')) {
+    // 페이팔은 승인 대기(pending)가 있어요. 승인 결과는 웹훅(portoneWebhook)으로 받아서 그때 이용권을 지급해요.
+    await db.collection('billing').doc(firstUid).set({ ...sub, first: true, scheduledAt: new Date().toISOString() });
+    return { ok: true, pending: true };
+  }
+  if (pay.code !== 0 || status !== 'paid') {
     throw new HttpsError('aborted', '첫 결제가 승인되지 않았어요: ' + ((pay.response && pay.response.fail_reason) || pay.message));
   }
 
-  const sub = { uid, productType, productId, customerUid, price, currency, name };
   const paidAt = new Date();
   const nextAt = addOneMonth(paidAt);
   await scheduleNext(token, sub, nextAt);
@@ -184,7 +193,7 @@ exports.portoneWebhook = onRequest(OPTS, async (req, res) => {
       const paidAt = new Date(p.paid_at * 1000);
       const nextAt = addOneMonth(new Date(sub.scheduledAt));
       await scheduleNext(token, sub, nextAt);
-      await applyPaidPeriod(sub, paidAt, nextAt, false);
+      await applyPaidPeriod(sub, paidAt, nextAt, !!sub.first);
       await billingSnap.ref.update({ handled: true, status: 'paid' });
     } else if (p.status === 'failed') {
       const ref = db.collection('entitlements').doc(sub.uid);

@@ -1065,3 +1065,8 @@
   .sm-meta{display:flex; gap:6px; flex-wrap:wrap; margin-top:-6px;}
   .sm-meta span{font-size:0.76rem; color:var(--green); border:1px solid var(--line); border-radius:999px; padding:3px 10px; background:var(--ivory-deep);}
   .worksheet-card p.sm-desc, #smpDesc{white-space:pre-line;}
+
+  /* 페이팔 정기결제 버튼 영역 */
+  .paypal-rt-wrap{margin:6px 0 4px;}
+  .paypal-hint{font-size:0.82rem; color:var(--ink-soft); line-height:1.6; margin-bottom:10px;}
+  .paypal-rt-wrap .portone-ui-container{min-height:48px;}

@@ -617,9 +617,15 @@ window.ClazzApp = (function(){
   //   카드사 심사가 통과되면 실제 발급받은 정기결제 MID로 바꿔주세요.
   var PG_ONETIME = 'html5_inicis.INIpayTest';
   var PG_BILLING = 'html5_inicis.INIBillTst';
-  // 달러(USD) 정기결제 채널 — 해외카드·USD 정기결제를 지원하는 포트원 채널이 생기면 여기에 넣어주세요.
-  // 비어 있으면 영어 화면의 달러 결제는 "준비 중" 안내만 띄우고 결제창을 열지 않아요(원화로 잘못 청구되지 않도록).
-  var PG_BILLING_USD = '';
+  // ⚠️ 달러(USD) 정기결제 = 페이팔 정기결제(Reference Transaction, paypal_v2)
+  // - PAYPAL_CHANNEL_KEY : 포트원 콘솔 > 결제 연동 > 연동 정보 > 채널 관리 에 있는 페이팔 채널의 "채널 키"
+  //   비어 있으면 영어 화면에서는 "준비 중" 안내만 나오고 결제가 열리지 않아요(원화로 잘못 청구되지 않도록).
+  // - PAYPAL_SANDBOX : 페이팔 테스트 계정이면 true, 실제 운영 계정이면 false
+  // - PAYPAL_FRAUDNET_SOURCE : 페이팔 이상거래 방지(Fraudnet)용 식별값. 페이팔 판매자 ID + '_' + 페이지 이름 형태예요.
+  //   (예: 7WBB3CKT63FRG_checkout-page) 페이팔/포트원에서 안내받은 값으로 바꿔주세요.
+  var PAYPAL_CHANNEL_KEY = '';
+  var PAYPAL_SANDBOX = true;
+  var PAYPAL_FRAUDNET_SOURCE = 'CLAZZPIANO_musiclab';
 
   var PAY_TEXT = {
     methodTitle:{kr:'결제 수단 선택', en:'Choose a payment method'},
@@ -632,7 +638,11 @@ window.ClazzApp = (function(){
              en:'I agree to be charged automatically on the same day every month. I can cancel anytime from My Page, and billing stops from the next billing date.'},
     consentNeeded:{kr:'정기결제 동의에 체크해주세요.', en:'Please agree to monthly billing first.'},
     terms:{kr:'환불 규정 보기', en:'See refund policy'},
-    usdNotReady:{kr:'달러 결제는 준비 중이에요. KR로 바꾸면 원화로 결제할 수 있어요.', en:'USD payment is coming soon. Switch to KR to pay in Korean won.'}
+    usdNotReady:{kr:'달러 결제는 준비 중이에요. KR로 바꾸면 원화로 결제할 수 있어요.', en:'USD payment is coming soon. Switch to KR to pay in Korean won.'},
+    paypalHint:{kr:'아래 페이팔 버튼으로 결제 계정을 등록하면 첫 달이 결제되고, 이후 매월 자동으로 결제돼요.', en:'Register your PayPal account with the button below. Your first month is charged now, then monthly after that.'},
+    paypalConsentFirst:{kr:'먼저 위의 정기결제 동의에 체크해주세요.', en:'Please tick the monthly billing agreement above to continue with PayPal.'},
+    paypalPending:{kr:'페이팔에서 결제를 확인하고 있어요. 잠시 후 마이페이지에서 확인해주세요.', en:'PayPal is confirming your payment. Please check My Page in a few minutes.'},
+    paypalFailed:{kr:'페이팔 등록이 완료되지 않았어요. 다시 시도해주세요.', en:'PayPal registration was not completed. Please try again.'}
   };
 
   // 결제 모달 안에 "정기결제 동의" 영역을 한 번만 만들어 넣어요 (모든 페이지 공통).
@@ -651,6 +661,128 @@ window.ClazzApp = (function(){
     link.href = 'terms.html#refund';
     link.target = '_blank';
     wrap.parentNode.insertBefore(link, wrap.nextSibling);
+  }
+
+  /* ---------- 페이팔 정기결제 (영어 화면 · USD) ----------
+     페이팔은 결제창을 직접 여는 방식이 아니라, 결제 모달 안에 "페이팔 버튼"을 그려두고
+     구매자가 그 버튼을 누르면 페이팔 계정 등록(빌링키 발급) 창이 열려요.
+     등록이 끝나면 서버(startSubscription)가 첫 달 $3.99 를 청구하고 다음 달을 예약해요. */
+  var paypalState = { rendered:false, firstMerchantUid:null, current:null };
+
+  function ensurePaypalBox(){
+    var wrap = document.getElementById('paypalRtWrap');
+    if(wrap) return wrap;
+    var anchor = document.getElementById('confirmPayBtn');
+    if(!anchor) return null;
+    wrap = document.createElement('div');
+    wrap.id = 'paypalRtWrap';
+    wrap.className = 'paypal-rt-wrap';
+    wrap.innerHTML = '<p class="paypal-hint" id="paypalHint"></p>' +
+      '<div class="portone-ui-container" data-portone-ui-type="paypal-rt"></div>';
+    anchor.parentNode.insertBefore(wrap, anchor);
+    return wrap;
+  }
+
+  // 페이팔이 요구하는 이상거래 방지 스크립트(Fraudnet). 첫 달 청구 주문번호와 연결돼요.
+  function loadPaypalFraudnet(merchantUid){
+    if(document.getElementById('ppFraudnetCfg')) return;
+    var cfg = document.createElement('script');
+    cfg.type = 'application/json';
+    cfg.id = 'ppFraudnetCfg';
+    cfg.setAttribute('fncls', 'fnparams-dede7cc5-15fd-4c75-a9f4-36c430ee3a99');
+    cfg.text = JSON.stringify({ f: merchantUid, s: PAYPAL_FRAUDNET_SOURCE, sandbox: PAYPAL_SANDBOX });
+    document.body.appendChild(cfg);
+    var fb = document.createElement('script');
+    fb.src = 'https://c.paypal.com/da/r/fb.js';
+    document.body.appendChild(fb);
+  }
+
+  function onPaypalDone(rsp){
+    var cur = paypalState.current;
+    if(!cur) return;
+    $('#payStepMethod').classList.remove('active');
+    $('#payStepProcessing').classList.add('active');
+    fbFunctions.httpsCallable('startSubscription')({
+      customerUid: cur.customerUid,
+      expectedAmount: cur.product.price,
+      currency: 'USD',
+      productType: cur.product.type,
+      productId: cur.product.id,
+      firstMerchantUid: paypalState.firstMerchantUid
+    }).then(function(res){
+      var data = (res && res.data) || {};
+      return refreshEntitlements().then(function(){
+        closeModal('paymentModal');
+        paypalState.firstMerchantUid = null;
+        if(data.pending){
+          showToast(t(PAY_TEXT.paypalPending));
+          return;
+        }
+        showToast(getLang() === 'en' ? 'Monthly billing started.' : '정기결제가 시작됐어요.');
+        cur.onSuccess();
+      });
+    }).catch(function(err){
+      console.error('클래쯔피아노: 페이팔 정기결제 확인 실패', err, rsp);
+      $('#payStepProcessing').classList.remove('active');
+      $('#payStepMethod').classList.add('active');
+      showToast(t(PAY_TEXT.paypalFailed));
+    });
+  }
+
+  function startPaypalCheckout(product, onSuccess, consentBox, ppWrap){
+    var hint = $('#paypalHint');
+    if(!PAYPAL_CHANNEL_KEY){
+      ppWrap.style.display = 'block';
+      hint.textContent = t(PAY_TEXT.usdNotReady);
+      ppWrap.querySelector('.portone-ui-container').style.display = 'none';
+      return;
+    }
+    var user = currentUser();
+    if(!user){ requireLogin(window.location.href); return; }
+    if(typeof IMP === 'undefined'){
+      showToast('Payment module failed to load. Please refresh and try again.');
+      return;
+    }
+    if(!paypalState.firstMerchantUid){
+      paypalState.firstMerchantUid = 'clazzfirst_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+      loadPaypalFraudnet(paypalState.firstMerchantUid);
+    }
+    var customerUid = 'clazz_' + user.uid + '_' + product.type + '_' + product.id + '_usd';
+    paypalState.current = { product: product, onSuccess: onSuccess, customerUid: customerUid };
+
+    var req = {
+      channelKey: PAYPAL_CHANNEL_KEY,
+      pay_method: 'paypal',
+      merchant_uid: 'clazzpiano_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
+      name: t(product.name) + ' (monthly)',
+      customer_uid: customerUid,
+      customer_id: user.uid,
+      buyer_email: user.email || '',
+      buyer_name: user.name || ''
+    };
+
+    ppWrap.style.display = 'block';
+    ppWrap.querySelector('.portone-ui-container').style.display = 'none';
+    hint.textContent = t(PAY_TEXT.paypalConsentFirst);
+
+    function showButton(){
+      hint.textContent = t(PAY_TEXT.paypalHint);
+      ppWrap.querySelector('.portone-ui-container').style.display = 'block';
+      IMP.init(IMP_STORE_CODE);
+      if(!paypalState.rendered){
+        IMP.loadUI('paypal-rt', req, onPaypalDone);
+        paypalState.rendered = true;
+      }else{
+        IMP.updateLoadUIRequest('paypal-rt', req);
+      }
+    }
+    consentBox.onchange = function(){
+      if(consentBox.checked){ showButton(); }
+      else{
+        hint.textContent = t(PAY_TEXT.paypalConsentFirst);
+        ppWrap.querySelector('.portone-ui-container').style.display = 'none';
+      }
+    };
   }
 
   // product: { name:{kr,en}, price, currency?:'KRW'|'USD', type:'game'|'worksheet'|'sheetmusic'|'tier'|'lab', id, recurring:boolean }
@@ -695,14 +827,23 @@ window.ClazzApp = (function(){
       if(msg) showToast(msg);
     }
 
+    // 영어 화면(달러) 정기결제는 페이팔 버튼으로 진행해요.
+    var usePaypal = recurring && currency === 'USD';
+    var ppWrap = ensurePaypalBox();
+    var methods = document.querySelector('#payStepMethod .pay-methods');
+    if(methods) methods.style.display = usePaypal ? 'none' : '';
+    if(confirmBtn) confirmBtn.style.display = usePaypal ? 'none' : '';
+    if(ppWrap) ppWrap.style.display = 'none';
+    if(consentBox) consentBox.onchange = null;
+    if(usePaypal && ppWrap){
+      startPaypalCheckout(product, onSuccess, consentBox, ppWrap);
+      return;
+    }
+
     if(!confirmBtn) return;
     confirmBtn.onclick = function(){
       if(recurring && consentBox && !consentBox.checked){
         showToast(t(PAY_TEXT.consentNeeded));
-        return;
-      }
-      if(currency === 'USD' && !PG_BILLING_USD){
-        showToast(t(PAY_TEXT.usdNotReady));
         return;
       }
       if(typeof IMP === 'undefined'){
@@ -717,7 +858,7 @@ window.ClazzApp = (function(){
 
       var merchantUid = 'clazzpiano_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
       var req = {
-        pg: recurring ? (currency === 'USD' ? PG_BILLING_USD : PG_BILLING) : PG_ONETIME,
+        pg: recurring ? PG_BILLING : PG_ONETIME,
         pay_method: 'card',
         merchant_uid: merchantUid,
         name: t(product.name) + (recurring ? (lang === 'en' ? ' (monthly)' : ' (월 정기결제)') : ''),
@@ -730,7 +871,7 @@ window.ClazzApp = (function(){
       };
       if(recurring){
         // 카드 정보는 PG사가 보관하고, 우리는 이 고객 식별값(customer_uid)으로만 매달 청구를 요청해요.
-        req.customer_uid = 'clazz_' + user.uid + '_' + product.type + '_' + product.id + (currency === 'USD' ? '_usd' : '');
+        req.customer_uid = 'clazz_' + user.uid + '_' + product.type + '_' + product.id;
       }
 
       IMP.init(IMP_STORE_CODE);
