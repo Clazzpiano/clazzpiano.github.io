@@ -37,7 +37,7 @@
   <div class="wrap page-head">
     <a class="back-link" href="index.html" data-i18n="backHome">← 홈으로</a>
     <h1 data-i18n="pageTitle">악보+MR 전체보기</h1>
-    <p data-i18n="pageSub">클래쯔피아노 소곡의 악보 PDF와 반주 MR 음원을 한 번에 다운로드할 수 있어요.</p>
+    <p data-i18n="pageSub">클래쯔피아노 소곡의 악보 PDF와 반주 MR 음원을 한 번에 다운로드할 수 있어요. 구매일로부터 1년 동안 다운로드할 수 있어요.</p>
   </div>
 
   <section>
@@ -152,7 +152,7 @@
       : (lang === 'en' ? 'Sheet PDF only' : '악보 PDF만 제공');
 
     var priceRow = owned
-      ? '<div class="card-price-row"><span class="owned-badge">' + ownedTag + '</span></div>'
+      ? '<div class="card-price-row"><span class="owned-badge">' + ownedTag + '</span><span class="lock-badge">' + ClazzApp.downloadUntilLabel(ClazzApp.sheetMusicDownloadUntil(item)) + '</span></div>'
       : '<div class="card-price-row"><span class="price-tag">' + ClazzApp.labPrice(item).label + '</span>' +
         (loggedIn ? '<span class="lock-badge">' + bundleTag + '</span>' : '<span class="lock-badge">' + loginTag + '</span>') + '</div>';
 
@@ -226,8 +226,8 @@
 
   var PAGE_I18N = Object.assign({}, ClazzApp.COMMON_I18N, {
     pageTitle:{kr:'악보+MR 전체보기', en:'All Sheet Music + MR'},
-    pageSub:{kr:'클래쯔피아노 소곡의 악보 PDF와 반주 MR 음원을 한 번에 다운로드할 수 있어요.',
-             en:'Download sheet music PDFs and MR backing tracks for Clazz Piano pieces, bundled together.'}
+    pageSub:{kr:'클래쯔피아노 소곡의 악보 PDF와 반주 MR 음원을 한 번에 다운로드할 수 있어요. 구매일로부터 1년 동안 다운로드할 수 있어요.',
+             en:'Download sheet music PDFs and MR backing tracks for Clazz Piano pieces, bundled together. Downloads are available for 1 year from the purchase date.'}
   });
 
   ClazzApp.onReady(function(){

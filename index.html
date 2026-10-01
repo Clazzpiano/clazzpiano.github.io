@@ -430,7 +430,7 @@
       var loginTag = lang === 'en' ? 'Login required' : '로그인 필요';
 
       var priceRow = owned
-        ? '<div class="card-price-row"><span class="owned-badge">' + ownedTag + '</span></div>'
+        ? '<div class="card-price-row"><span class="owned-badge">' + ownedTag + '</span><span class="lock-badge">' + ClazzApp.downloadUntilLabel(ClazzApp.sheetMusicDownloadUntil(item)) + '</span></div>'
         : '<div class="card-price-row"><span class="price-tag">' + ClazzApp.labPrice(item).label + '</span>' +
           (loggedIn ? '<span class="lock-badge">' + bundleTag + '</span>' : '<span class="lock-badge">' + loginTag + '</span>') + '</div>';
 

@@ -475,12 +475,50 @@ window.ClazzApp = (function(){
   // 유료 워크지는 "상품id-언어" 조합으로 구매 여부를 구분해서, 한/영 버전이 각각 따로 결제돼요.
   function worksheetLangId(sheet){ return sheet.id + '-' + getLang(); }
 
+  /* ---------- 구매한 PDF 다운로드 기간: 구매일로부터 1년 ----------
+     가장 최근 구매(또는 구독 크레딧 사용) 날짜로부터 1년 동안 다운로드할 수 있어요.
+     기간이 지나면 다시 구매하면 그날부터 1년이 새로 시작돼요. */
+  var DOWNLOAD_PERIOD_YEARS = 1;
+  function latestPurchaseDate(kinds, refId){
+    var hist = (getEnt().purchaseHistory || []);
+    var latest = null;
+    hist.forEach(function(h){
+      if(h.refId === refId && kinds.indexOf(h.kind) > -1 && h.date){
+        var d = new Date(h.date);
+        if(!latest || d > latest) latest = d;
+      }
+    });
+    return latest;
+  }
+  function downloadUntilFrom(purchased){
+    if(!purchased) return null;
+    var d = new Date(purchased.getTime());
+    d.setFullYear(d.getFullYear() + DOWNLOAD_PERIOD_YEARS);
+    return d;
+  }
+  // 반환: Date(다운로드 가능 마지막 시각) 또는 null(구매 기록 날짜 없음)
+  function worksheetDownloadUntil(sheet){
+    return downloadUntilFrom(latestPurchaseDate(['worksheet', 'worksheet-credit'], worksheetLangId(sheet)));
+  }
+  function sheetMusicDownloadUntil(item){
+    return downloadUntilFrom(latestPurchaseDate(['sheetmusic'], item.id));
+  }
+  function withinPeriod(until){
+    return !until || new Date() <= until;   // 날짜 기록이 없는 예전 구매는 막지 않아요
+  }
   function hasWorksheetAccess(sheet){
     if(sheet.free) return isLoggedIn();
-    return isLoggedIn() && getEnt().paidWorksheetIds.indexOf(worksheetLangId(sheet)) > -1;
+    if(!isLoggedIn() || getEnt().paidWorksheetIds.indexOf(worksheetLangId(sheet)) === -1) return false;
+    return withinPeriod(worksheetDownloadUntil(sheet));
   }
   function hasSheetMusicAccess(item){
-    return isLoggedIn() && (getEnt().ownedSheetMusicIds || []).indexOf(item.id) > -1;
+    if(!isLoggedIn() || (getEnt().ownedSheetMusicIds || []).indexOf(item.id) === -1) return false;
+    return withinPeriod(sheetMusicDownloadUntil(item));
+  }
+  // 카드에 보여줄 "다운로드 기한" 문구
+  function downloadUntilLabel(until){
+    if(!until) return '';
+    return getLang() === 'en' ? ('Download until ' + formatDate(until.toISOString())) : (formatDate(until.toISOString()) + '까지 다운로드');
   }
 
   function grantSheetMusicPurchase(sheetMusicId, price){
@@ -523,10 +561,12 @@ window.ClazzApp = (function(){
   function useWorksheetCredit(sheetId){
     if(!isLoggedIn()) return {ok:false, error:'no-login'};
     var ent = getEnt();
-    if(ent.paidWorksheetIds.indexOf(sheetId) > -1) return {ok:true, already:true};
+    var stillValid = ent.paidWorksheetIds.indexOf(sheetId) > -1 &&
+      withinPeriod(downloadUntilFrom(latestPurchaseDate(['worksheet', 'worksheet-credit'], sheetId)));
+    if(stillValid) return {ok:true, already:true};
     if(ent.worksheetCredits <= 0) return {ok:false, error:'no-credit'};
     ent.worksheetCredits -= 1;
-    ent.paidWorksheetIds.push(sheetId);
+    if(ent.paidWorksheetIds.indexOf(sheetId) === -1) ent.paidWorksheetIds.push(sheetId);
     ent.purchaseHistory.unshift({kind:'worksheet-credit', refId:sheetId, price:0, date:new Date().toISOString()});
     persistEnt();
     return {ok:true};
@@ -1138,7 +1178,7 @@ window.ClazzApp = (function(){
     requireLogin:requireLogin, paintAuthNav:paintAuthNavLabel,
 
     getEnt:getEnt, onReady:onReady,
-    hasGameAccess:hasGameAccess, labSubscription:labSubscription, cancelSubscription:cancelSubscription, hasWorksheetAccess:hasWorksheetAccess, hasSheetMusicAccess:hasSheetMusicAccess,
+    hasGameAccess:hasGameAccess, worksheetDownloadUntil:worksheetDownloadUntil, sheetMusicDownloadUntil:sheetMusicDownloadUntil, downloadUntilLabel:downloadUntilLabel, labSubscription:labSubscription, cancelSubscription:cancelSubscription, hasWorksheetAccess:hasWorksheetAccess, hasSheetMusicAccess:hasSheetMusicAccess,
     grantGamePurchase:grantGamePurchase, useGameSlot:useGameSlot,
     grantWorksheetPurchase:grantWorksheetPurchase, useWorksheetCredit:useWorksheetCredit,
     grantSheetMusicPurchase:grantSheetMusicPurchase,

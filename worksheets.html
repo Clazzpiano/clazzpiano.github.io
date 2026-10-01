@@ -37,7 +37,7 @@
   <div class="wrap page-head">
     <a class="back-link" href="index.html" data-i18n="backHome">← 홈으로</a>
     <h1 data-i18n="pageTitle">워크지 전체보기</h1>
-    <p data-i18n="pageSub">색칠워크지는 회원이면 무료로, 퀴즈워크지와 made by 워크지는 구매하거나 구독 크레딧으로 다운로드할 수 있어요.</p>
+    <p data-i18n="pageSub">색칠워크지는 회원이면 무료로, 퀴즈워크지와 made by 워크지는 구매하거나 구독 크레딧으로 다운로드할 수 있어요. 구매한 워크지는 구매일로부터 1년 동안 다운로드할 수 있어요.</p>
   </div>
 
   <section>
@@ -181,7 +181,7 @@
       : null;
 
     var priceRow = owned
-      ? '<div class="card-price-row"><span class="owned-badge">' + ownedTag + '</span></div>'
+      ? '<div class="card-price-row"><span class="owned-badge">' + ownedTag + '</span><span class="lock-badge">' + ClazzApp.downloadUntilLabel(ClazzApp.worksheetDownloadUntil(sheet)) + '</span></div>'
       : '<div class="card-price-row"><span class="price-tag">' + displayPrice + '</span>' +
         (saleTag ? '<span class="owned-badge">' + saleTag + '</span>' : '') +
         (loggedIn ? '<span class="lock-badge">' + creditsTag + '</span>' : '<span class="lock-badge">' + loginTag + '</span>') + '</div>';
@@ -246,8 +246,8 @@
 
   var PAGE_I18N = Object.assign({}, ClazzApp.COMMON_I18N, {
     pageTitle:{kr:'워크지 전체보기', en:'All Worksheets'},
-    pageSub:{kr:'색칠워크지는 회원이면 무료로, 퀴즈워크지와 made by 워크지는 구매하거나 구독 크레딧으로 다운로드할 수 있어요.',
-             en:'Coloring worksheets are free for members. Quiz and Made-by worksheets can be purchased or downloaded with subscription credits.'},
+    pageSub:{kr:'색칠워크지는 회원이면 무료로, 퀴즈워크지와 made by 워크지는 구매하거나 구독 크레딧으로 다운로드할 수 있어요. 구매한 워크지는 구매일로부터 1년 동안 다운로드할 수 있어요.',
+             en:'Coloring worksheets are free for members. Quiz and Made-by worksheets can be purchased or downloaded with subscription credits. Purchased worksheets can be downloaded for 1 year from the purchase date.'},
     wsCatColor:{kr:'색칠워크지', en:'Coloring'},
     wsCatQuiz:{kr:'퀴즈워크지', en:'Quiz'},
     wsCatMadeby:{kr:'made by 워크지', en:'Made by'}
