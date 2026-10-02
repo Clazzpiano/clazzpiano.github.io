@@ -7,9 +7,9 @@
 <meta name="robots" content="noindex, nofollow">
 <script>
   // 클래쯔 뮤직랩 페이지 안에서만 열리도록: 주소로 직접 들어오면 뮤직랩 페이지로 돌려보내요.
-  // (정적 호스팅이라 완벽한 잠금은 아니고, 주소가 퍼져도 바로 열리지 않게 하는 1차 장치예요.)
   try{ if(window.top === window.self){ location.replace('musiclab.html'); } }catch(e){}
 </script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Jua&family=Do+Hyeon&display=swap" rel="stylesheet">
 <style>
@@ -86,6 +86,7 @@
     flex:1 1 28%;
     min-width:84px;
     text-align:center;
+    word-break:keep-all;
     padding:14px 10px;
     border-radius:20px;
     border:3px solid var(--line);
@@ -166,11 +167,14 @@
   }
 
   .solfege-row{
-    display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:6px;
+    display:grid; grid-template-columns:repeat(7, 1fr); gap:8px; margin-top:6px;
+  }
+  @media (max-width:480px){
+    .solfege-row{ grid-template-columns:repeat(4, 1fr); }
   }
   .sf-btn{
-    flex:1 1 12%;
-    min-width:44px;
+    width:100%;
+    min-width:0;
     aspect-ratio:1/1;
     border-radius:22px;
     border:none;
@@ -234,11 +238,11 @@
     <div class="card">
       <div class="section-label">🎼 음자리 범위 선택</div>
       <div class="chip-row" id="zoneRow">
-        <div class="chip" data-zone="veryLow">더낮은도자리<small>더낮은도~시</small></div>
+        <div class="chip" data-zone="veryLow">더낮은&#8203;도자리<small>더낮은도~시</small></div>
         <div class="chip" data-zone="low">낮은도자리<small>낮은도~낮은시</small></div>
         <div class="chip selected" data-zone="middle">가온도자리<small>가온도~시</small></div>
         <div class="chip" data-zone="high">높은도자리<small>높은도~높은시</small></div>
-        <div class="chip" data-zone="veryHigh">더높은도자리<small>도~솔(덧줄필수)</small></div>
+        <div class="chip" data-zone="veryHigh">더높은&#8203;도자리<small>도~솔(덧줄필수)</small></div>
       </div>
       <div class="warn-text" id="zoneWarn"></div>
     </div>
