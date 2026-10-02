@@ -1171,8 +1171,11 @@ window.ClazzApp = (function(){
     var lang = getLang();
     return 'worksheets/' + (sheet.free ? 'free' : 'paid') + '/' + sheet.id + '/' + sheet.id + '-' + lang + '.pdf';
   }
-  function sheetMusicPdfPath(item){ return 'sheetmusic/' + item.id + '/' + item.id + '.pdf'; }
-  function sheetMusicMrPath(item){ return 'sheetmusic/' + item.id + '/' + item.id + '-mr.mp3'; }
+  // ⚠️ Firebase Storage 의 악보 폴더 이름은 띄어쓰기가 있는 "sheet music" 이에요. (sheetmusic 아님)
+  //    파일 위치: sheet music/<악보id>/<악보id>.pdf , MR은 sheet music/<악보id>/<악보id>-mr.mp3
+  var SHEET_MUSIC_FOLDER = 'sheet music';
+  function sheetMusicPdfPath(item){ return SHEET_MUSIC_FOLDER + '/' + item.id + '/' + item.id + '.pdf'; }
+  function sheetMusicMrPath(item){ return SHEET_MUSIC_FOLDER + '/' + item.id + '/' + item.id + '-mr.mp3'; }
 
   /* ---------- 악보 상세 미리보기 모달 (설명 + 유튜브 연주영상) ---------- */
   function extractYoutubeId(url){
