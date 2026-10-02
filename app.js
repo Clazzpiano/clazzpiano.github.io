@@ -1095,6 +1095,7 @@ window.ClazzApp = (function(){
             })
           : fbFunctions.httpsCallable('verifyPayment')({
               impUid: rsp.imp_uid,
+              merchantUid: rsp.merchant_uid || merchantUid,
               expectedAmount: product.price,
               productType: product.type,
               productId: product.id
