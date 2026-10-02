@@ -336,6 +336,10 @@ window.ClazzApp = (function(){
     if(authReady) cb();
     else readyQueue.push(cb);
   }
+  // 모든 페이지 공통: 로그인 확인이 끝나면 휴대폰 결제 복귀 처리 + 저장된 안내 메시지 표시
+  readyQueue.push(function(){
+    try{ finishMobilePayment(); showSavedPayToast(); }catch(e){ console.error(e); }
+  });
 
   fbAuth.onAuthStateChanged(function(fbUser){
     if(!fbUser){
@@ -899,6 +903,70 @@ window.ClazzApp = (function(){
     };
   }
 
+  /* ---------- 휴대폰 결제 후 돌아왔을 때 마무리 ----------
+     휴대폰 결제창은 결제가 끝나면 페이지를 새로 열면서 돌아와요(콜백이 실행되지 않음).
+     그래서 결제 직전에 주문 정보를 잠깐 저장해뒀다가, 돌아오면 서버 확인까지 이어서 처리해요. */
+  var PENDING_KEY = 'clazz_pending_pay';
+  function savePendingPayment(info){
+    try{ info.at = Date.now(); sessionStorage.setItem(PENDING_KEY, JSON.stringify(info)); }catch(e){}
+  }
+  function clearPendingPayment(){
+    try{ sessionStorage.removeItem(PENDING_KEY); }catch(e){}
+  }
+  function readPendingPayment(){
+    try{
+      var raw = sessionStorage.getItem(PENDING_KEY);
+      if(!raw) return null;
+      var info = JSON.parse(raw);
+      if(Date.now() - info.at > 60 * 60 * 1000) return null;  // 1시간 넘은 건 무시
+      return info;
+    }catch(e){ return null; }
+  }
+  function finishMobilePayment(){
+    var params = new URLSearchParams(location.search);
+    if(!params.get('clazz_pay_return')) return;
+    var lang = getLang();
+    var cleanUrl = location.origin + location.pathname;
+    var pending = readPendingPayment();
+    clearPendingPayment();
+    var hasError = !!(params.get('error_code') || params.get('error_msg'));
+    var success = params.get('imp_success') === 'true' || params.get('success') === 'true' ||
+                  (!hasError && params.get('imp_success') !== 'false' && !!params.get('imp_uid'));
+    function done(msg){
+      try{ sessionStorage.setItem('clazz_pay_toast', msg); }catch(e){}
+      location.replace(cleanUrl);
+    }
+    if(!pending || !isLoggedIn()){ history.replaceState(null, '', cleanUrl); return; }
+    if(!success){
+      done(params.get('error_msg') || (lang === 'en' ? 'Payment was cancelled.' : '결제가 취소됐어요.'));
+      return;
+    }
+    showToast(lang === 'en' ? 'Confirming your payment…' : '결제를 확인하고 있어요…');
+    var call = pending.recurring
+      ? fbFunctions.httpsCallable('startSubscription')({
+          customerUid: pending.customerUid, expectedAmount: pending.product.price, currency: pending.currency,
+          productType: pending.product.type, productId: pending.product.id })
+      : fbFunctions.httpsCallable('verifyPayment')({
+          impUid: params.get('imp_uid'), expectedAmount: pending.product.price,
+          productType: pending.product.type, productId: pending.product.id });
+    call.then(function(){
+      done(pending.recurring
+        ? (lang === 'en' ? 'Monthly billing started.' : '정기결제가 시작됐어요.')
+        : (lang === 'en' ? 'Payment complete.' : '결제가 완료됐어요.'));
+    }).catch(function(err){
+      console.error('클래쯔피아노: 휴대폰 결제 확인 실패', err);
+      done(lang === 'en'
+        ? 'Payment could not be verified. Please contact support.'
+        : '결제 확인에 실패했어요. 카드사에서 실제로 결제가 됐다면 문의(mihyun555@gmail.com)로 연락해주세요.');
+    });
+  }
+  function showSavedPayToast(){
+    try{
+      var msg = sessionStorage.getItem('clazz_pay_toast');
+      if(msg){ sessionStorage.removeItem('clazz_pay_toast'); setTimeout(function(){ showToast(msg); }, 300); }
+    }catch(e){}
+  }
+
   // product: { name:{kr,en}, price, currency?:'KRW'|'USD', type:'game'|'worksheet'|'sheetmusic'|'tier'|'lab', id, recurring:boolean }
   function openPaymentFlow(product, onSuccess){
     var lang = getLang();
@@ -984,16 +1052,33 @@ window.ClazzApp = (function(){
         // KG이니시스는 구매자 연락처가 없으면 결제창이 열리지 않아요.
         buyer_tel: user.phone || '010-0000-0000'
       };
+      // 브라우저가 중간에 닫혀도 서버(웹훅)가 구매를 마무리할 수 있도록 주문 정보를 함께 보내요.
+      req.custom_data = { uid: user.uid, productType: product.type, productId: product.id, currency: currency };
       var channel = recurring ? PG_BILLING : PG_ONETIME;
       if(/^channel-key-/.test(channel)) req.channelKey = channel; else req.pg = channel;
+
+      // 휴대폰에서는 결제창이 끝나면 콜백 대신 이 주소로 돌아와요 → 돌아온 뒤 finishMobilePayment 가 마무리해요.
+      req.m_redirect_url = location.origin + location.pathname + '?clazz_pay_return=1';
+      if(recurring){
+        // 휴대폰 카드 등록 창: 카드번호·유효기간·생년월일만 입력 (비밀번호·주민번호 입력 생략)
+        req.bypass = { inicis: { authtype: '01' } };
+      }
       if(recurring){
         // 카드 정보는 PG사가 보관하고, 우리는 이 고객 식별값(customer_uid)으로만 매달 청구를 요청해요.
         req.customer_uid = 'clazz_' + user.uid + '_' + product.type + '_' + product.id;
       }
 
+      savePendingPayment({
+        recurring: recurring, currency: currency, customerUid: req.customer_uid || null,
+        merchantUid: merchantUid, product: { type: product.type, id: product.id, price: product.price }
+      });
+
       IMP.init(IMP_STORE_CODE);
       IMP.request_pay(req, function(rsp){
-        if(!rsp.success){
+        clearPendingPayment();
+        // 포트원 최신 SDK는 success 값을 주지 않을 수 있어요 → 오류 코드가 없고 결제번호가 있으면 성공으로 봐요.
+        var paidOk = rsp && (rsp.success === true || (!rsp.error_code && !rsp.error_msg && !!rsp.imp_uid));
+        if(!paidOk){
           backToMethod(rsp.error_msg || (lang === 'en' ? 'Payment was cancelled.' : '결제가 취소됐어요.'));
           return;
         }
@@ -1026,9 +1111,10 @@ window.ClazzApp = (function(){
         }).catch(function(err){
           console.error('클래쯔피아노: 결제 확인 실패', err);
           closeModal('paymentModal');
-          showToast(lang === 'en'
+          var reason = err && (err.message || err.code) ? ' [' + (err.message || err.code) + ']' : '';
+          showToast((lang === 'en'
             ? 'Payment could not be verified. Please contact support.'
-            : '결제 확인에 실패했어요. 카드사에서 실제로 결제가 됐다면 문의(mihyun555@gmail.com)로 연락해주세요.');
+            : '결제 확인에 실패했어요. 카드사에서 실제로 결제가 됐다면 문의(mihyun555@gmail.com)로 연락해주세요.') + reason);
         });
       });
     };
