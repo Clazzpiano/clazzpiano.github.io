@@ -654,13 +654,13 @@ window.ClazzApp = (function(){
   var IMP_STORE_CODE = 'imp47257084';
 
   // ⚠️ 포트원 채널 설정 — 포트원 콘솔 > 결제 연동 > 채널 관리 의 "채널 키"(channel-key-...)를 넣어주세요.
-  // - PG_ONETIME : 단건 결제(워크지·악보+MR)용 KG이니시스 채널
-  // - PG_BILLING : 정기결제(빌링키 발급)용 KG이니시스 채널
+  // - PG_ONETIME : 단건 결제(워크지·악보+MR)용 NHN KCP 채널
+  // - PG_BILLING : 정기결제(빌링키 발급)용 NHN KCP 채널 (BC카드는 정기결제 불가)
   //   정기결제는 일반결제와 "다른 MID"를 써야 해요. 테스트 MID는 INIBillTst 이고,
   //   포트원 관리자 콘솔 > 결제 연동 > 채널 관리에서 "KG이니시스 · 정기결제" 채널을 추가해야 결제창이 열려요.
   //   카드사 심사가 통과되면 실제 발급받은 정기결제 MID로 바꿔주세요.
-  var PG_ONETIME = 'channel-key-23e276c8-8a4b-4392-bb83-3056721e676c'; // KG이니시스 일반결제 테스트 (INIpayTest)
-  var PG_BILLING = 'channel-key-934badf2-4e36-4f76-9dd5-eba1ce874b12'; // KG이니시스 정기결제 테스트 (INIBillTst)
+  var PG_ONETIME = 'channel-key-78eac2c0-89d7-4dd9-a916-fce91e06a46c'; // NHN KCP 일반결제 실연동 (IPBMH)
+  var PG_BILLING = 'channel-key-a3a5b373-7f5c-45c4-893b-ee6c5a71ce02'; // NHN KCP 정기결제 실연동 (IPBMI)
   // ⚠️ 달러(USD) 정기결제 = 페이팔 정기결제(Reference Transaction, paypal_v2)
   // - PAYPAL_CHANNEL_KEY : 포트원 콘솔 > 결제 연동 > 연동 정보 > 채널 관리 에 있는 페이팔 채널의 "채널 키"
   //   비어 있으면 영어 화면에서는 "준비 중" 안내만 나오고 결제가 열리지 않아요(원화로 잘못 청구되지 않도록).
@@ -678,7 +678,7 @@ window.ClazzApp = (function(){
     total:{kr:'결제 금액', en:'Total'},
     payNow:{kr:'결제 진행', en:'Proceed to pay'},
     subscribeNow:{kr:'정기결제 시작하기', en:'Start monthly billing'},
-    consent:{kr:'매월 같은 날 자동으로 결제되는 것에 동의해요. 해지는 마이페이지에서 언제든 할 수 있고, 해지하면 다음 결제일부터 청구되지 않아요.',
+    consent:{kr:'매월 같은 날 자동으로 결제되는 것에 동의해요. 해지는 마이페이지에서 언제든 할 수 있고, 해지하면 다음 결제일부터 청구되지 않아요. (BC카드는 정기결제에 사용할 수 없어요.)',
              en:'I agree to be charged automatically on the same day every month. I can cancel anytime from My Page, and billing stops from the next billing date.'},
     consentNeeded:{kr:'정기결제 동의에 체크해주세요.', en:'Please agree to monthly billing first.'},
     terms:{kr:'환불 규정 보기', en:'See refund policy'},
